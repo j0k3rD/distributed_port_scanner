@@ -2,13 +2,13 @@ import socket, re, os, sys, time, threading, queue, time, datetime, subprocess, 
 from constants import *
 
 # Functions
-def _is_ipv4(ip):
+def is_ipv4(ip):
     return re.match(IPV4_REGEX, ip)
 
-def _is_ipv4_range(ip_range):
+def is_ipv4_range(ip_range):
     return re.match(IPV4_RANGE_REGEX, ip_range)
 
-def _get_ipv4_range(ip_range):
+def get_ipv4_range(ip_range):
     ip_min, ip_max = ip_range.split('-')
     ip_min_list = ip_min.split('.')
     ip_max_list = ip_max.split('.')
@@ -20,14 +20,14 @@ def _get_ipv4_range(ip_range):
                     ip_range_list.append('{}.{}.{}.{}'.format(oct1, oct2, oct3, oct4))
     return ip_range_list
 
-def _is_port_range(port_range):
+def is_port_range(port_range):
     return re.match(PORT_RANGE_REGEX, port_range)
 
-def _get_port_range(port_range):
+def get_port_range(port_range):
     port_min, port_max = port_range.split('-')
     return range(int(port_min), int(port_max)+1)
 
-def _scan_port(ip, port):
+def scan_port(ip, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(0.1)
     result = sock.connect_ex((ip, port))
@@ -36,7 +36,7 @@ def _scan_port(ip, port):
     else:
         return False
 
-def _scan_ipv4(ip, port_range):
+def scan_ipv4(ip, port_range):
     port_range = _get_port_range(port_range)
     open_ports = []
     for port in port_range:
@@ -44,7 +44,7 @@ def _scan_ipv4(ip, port_range):
             open_ports.append(port)
     return open_ports
 
-def _scan_ipv4_range(ip_range, port_range):
+def scan_ipv4_range(ip_range, port_range):
     ip_range = _get_ipv4_range(ip_range)
     port_range = _get_port_range(port_range)
     open_ports = {}

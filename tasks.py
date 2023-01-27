@@ -1,21 +1,15 @@
-from celery import Celery, socket, os
+from celery import Celery, os
 from .services.port_scanning import *
+from .services.save_scan import *
 
-CELERY_BRKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
-
-app = Celery('tasks', broker=CELERY_BRKER_URL, backend=CELERY_RESULT_BACKEND)
-
-@app.task
-def scan_ports_python(ip, port):
-    ip = input(IPV4_INPUT)
-    port = input(PORT_INPUT)
-    option = input(PYTHON_OR_NMAP)
-    if option == '1':
-        scan_with_python(ip, port)
-    elif option == '2':
-        scan_with_nmap(ip, port)
+@celery.task
+def scan_with_python(ip, port_range):
+    if is_ipv4(ip):
+        open_ports = scan_ipv4(ip, port_range)
+    elif is_ipv4_range(ip):
+        open_ports = scan_ipv4_range(ip, port_range)
     else:
-        print(INVALID_OPTION)
-    
-    return {'status': 'Task Completed!'}
+        return 'Invalid IP'
+    for port in open_ports:
+        save_scan.delay(ip, port)
+    return 'Scan finished'
