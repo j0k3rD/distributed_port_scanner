@@ -1,126 +1,84 @@
-import socket, re, os
-
-# Constants
-IPV4_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-PORT_RANGE_REGEX = r"^(?:(?:[0-9]{1,4})-(?:[0-9]{1,4}))$"
-PORT_MIN = 1
-PORT_MAX = 65535
-IPV4_RANGE_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+import socket, re, os, sys, time, threading, queue, time, datetime, subprocess, platform, ipaddress
+from constants import *
 
 # Functions
-
-def nmap_scan(ip, port_range):
-    os.system("nmap -sT -p " + port_range + " " + ip)
-
-def print_progress_bar(iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
-    # Print New Line on Complete
-    if iteration == total: 
-        print()
-
-def is_ipv4(ip):
+def _is_ipv4(ip):
     return re.match(IPV4_REGEX, ip)
 
-def is_ipv4_range(ip_range):
+def _is_ipv4_range(ip_range):
     return re.match(IPV4_RANGE_REGEX, ip_range)
 
-def get_ipv4_range(ip_range):
-    ip_range = ip_range.split("-")
-    ip_range = list(map(int, ip_range))
-    return ip_range
+def _get_ipv4_range(ip_range):
+    ip_min, ip_max = ip_range.split('-')
+    ip_min_list = ip_min.split('.')
+    ip_max_list = ip_max.split('.')
+    ip_range_list = []
+    for oct1 in range(int(ip_min_list[0]), int(ip_max_list[0])+1):
+        for oct2 in range(int(ip_min_list[1]), int(ip_max_list[1])+1):
+            for oct3 in range(int(ip_min_list[2]), int(ip_max_list[2])+1):
+                for oct4 in range(int(ip_min_list[3]), int(ip_max_list[3])+1):
+                    ip_range_list.append('{}.{}.{}.{}'.format(oct1, oct2, oct3, oct4))
+    return ip_range_list
 
-def is_port_range(port_range):
+def _is_port_range(port_range):
     return re.match(PORT_RANGE_REGEX, port_range)
 
-def get_port_range(port_range):
-    port_range = port_range.split("-")
-    port_range = list(map(int, port_range))
-    return port_range
+def _get_port_range(port_range):
+    port_min, port_max = port_range.split('-')
+    return range(int(port_min), int(port_max)+1)
 
-def get_open_ports(ip, port_range):
+def _scan_port(ip, port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(0.1)
+    result = sock.connect_ex((ip, port))
+    if result == 0:
+        return True
+    else:
+        return False
+
+def _scan_ipv4(ip, port_range):
+    port_range = _get_port_range(port_range)
     open_ports = []
-    for port in range(port_range[0], port_range[1] + 1):
-        print_progress_bar(port, port_range[1], prefix = 'Progress:', suffix = 'Complete', length = 50)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(0.5)
-        result = sock.connect_ex((ip, port))
-        if result == 0:
+    for port in port_range:
+        if _scan_port(ip, port):
             open_ports.append(port)
-        sock.close()
     return open_ports
 
-def save_scan(ip, open_ports):
-    for port in open_ports:
-        os.system("python save_scan.py " + ip + " " + str(port))
+def _scan_ipv4_range(ip_range, port_range):
+    ip_range = _get_ipv4_range(ip_range)
+    port_range = _get_port_range(port_range)
+    open_ports = {}
+    for ip in ip_range:
+        open_ports[ip] = []
+        for port in port_range:
+            if _scan_port(ip, port):
+                open_ports[ip].append(port)
+    return open_ports
 
-# Main
-if __name__ == "__main__":
-    #Printear todos los puertos testeados y los que estan abiertos
-    scan_method = input("Enter the scan method (1: nmap, 2: python): ")
-    if scan_method == "1":
-        ip = input("Enter the IP address: ")
-        if is_ipv4(ip):
-            port_range = input("Enter the port range (ex: 1-65535): ")
-            if is_port_range(port_range):
-                port_range = get_port_range(port_range)
-                if port_range[0] >= PORT_MIN and port_range[1] <= PORT_MAX:
-                    open_ports = get_open_ports(ip, port_range)
-                    print(open_ports)
-                    save_scan(ip, open_ports)
-                else:
-                    print("Port range must be between " + str(PORT_MIN) + " and " + str(PORT_MAX))
-            else:
-                print("Port range must be in the format 1-65535")
-        elif is_ipv4_range(ip):
-            ip_range = get_ipv4_range(ip)
-            port_range = input("Enter the port range (ex: 1-65535): ")
-            if is_port_range(port_range):
-                port_range = get_port_range(port_range)
-                if port_range[0] >= PORT_MIN and port_range[1] <= PORT_MAX:
-                    for ip in range(int(ip_range[0].split(".")[3]), int(ip_range[1].split(".")[3]) + 1):
-                        ip = ip_range[0].split(".")[0] + "." + ip_range[0].split(".")[1] + "." + ip_range[0].split(".")[2] + "." + str(ip)
-                        print("Scanning " + ip)
-                        open_ports = get_open_ports(ip, port_range)
-                        print(open_ports)
-                        save_scan(ip, open_ports)
-                else:
-                    print("Port range must be between " + str(PORT_MIN) + " and " + str(PORT_MAX))
-            else:
-                print("Port range must be in the format 1-65535")
-        else:
-            print("Invalid IP address")
+def scan_with_nmap(ip, port_range):
+    os.system('nmap -p {} {}'.format(port_range, ip))
 
-    elif scan_method == "2":
-        ip = input("Enter the IP address: ")
-        if is_ipv4(ip):
-            port_range = input("Enter the port range (ex: 1-65535): ")
-            if is_port_range(port_range):
-                port_range = get_port_range(port_range)
-                if port_range[0] >= PORT_MIN and port_range[1] <= PORT_MAX:
-                    nmap_scan(ip, port_range)
-                else:
-                    print("Port range must be between " + str(PORT_MIN) + " and " + str(PORT_MAX))
-            else:
-                print("Port range must be in the format 1-65535")
-        elif is_ipv4_range(ip):
-            ip_range = get_ipv4_range(ip)
-            port_range = input("Enter the port range (ex: 1-65535): ")
-            if is_port_range(port_range):
-                port_range = get_port_range(port_range)
-                if port_range[0] >= PORT_MIN and port_range[1] <= PORT_MAX:
-                    for ip in range(int(ip_range[0].split(".")[3]), int(ip_range[1].split(".")[3]) + 1):
-                        ip = ip_range[0].split(".")[0] + "." + ip_range[0].split(".")[1] + "." + ip_range[0].split(".")[2] + "." + str(ip)
-                        print("Scanning " + ip)
-                        nmap_scan(ip, port_range)
-                else:
-                    print("Port range must be between " + str(PORT_MIN) + " and " + str(PORT_MAX))
-            else:
-                print("Port range must be in the format 1-65535")
-        else:
-            print("Invalid IP address")
-    
+def scan_with_python(ip, port_range):
+    if _is_ipv4(ip):
+        open_ports = _scan_ipv4(ip, port_range)
+        print(OPEN_PORTS.format(ip=ip, open_ports=open_ports))
+    elif _is_ipv4_range(ip):
+        open_ports = _scan_ipv4_range(ip, port_range)
+        for ip, ports in open_ports.items():
+            print(OPEN_PORTS.format(ip=ip, open_ports=ports))
     else:
-        print("Invalid scan method")
+        print(INVALID_IPV4)
+
+def main():
+    ip = input(IPV4_INPUT)
+    port_range = input(PORT_INPUT)
+    option = input(PYTHON_OR_NMAP)
+    if option == '1':
+        scan_with_python(ip, port_range)
+    elif option == '2':
+        scan_with_nmap(ip, port_range)
+    else:
+        print(INVALID_OPTION)
+
+if __name__ == '__main__':
+    main()
