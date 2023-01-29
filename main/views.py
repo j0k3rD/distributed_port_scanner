@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from . import app
-from services.port_scanning import *
+from flask import Flask, render_template, request, redirect, url_for, flash, Blueprint
+from .services.port_scanning import scan_with_python, scan_with_nmap
+# from .services import save_scan
+
+app = Blueprint('app', __name__, url_prefix='/')
 
 @app.route('/')
 def index():

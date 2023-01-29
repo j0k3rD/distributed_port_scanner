@@ -1,5 +1,5 @@
 import socket, re, os, sys, time, threading, queue, time, datetime, subprocess, platform, ipaddress
-from constants import *
+from main.services.constants import *
 
 # Functions
 def is_ipv4(ip):

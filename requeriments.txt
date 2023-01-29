@@ -1,3 +1,0 @@
-pip install python-nmap
-pip install alive-progress
-pip install python-nmap
