@@ -1,20 +1,58 @@
-<!-- HTML basico para la web -->
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Hack Scan</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: monospace;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      color: black;
+      background-color: white;
+      border: 2px solid black;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 50px;
+    }
+    #scan-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #submit-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <h1>PORT SCANNER W CELERY</h1>
-    <form action="/scan" method="POST">
-        <label for="ip">IP:</label>
-        <input type="text" name="ip" id="ip">
-        <label for="port">Puerto:</label>
-        <input type="text" name="port" id="port">
-        <input type="submit" value="Scan">
+  <div id="container">
+    <h1>Hack Scan</h1>
+    <form id="scan-form">
+      <input type="text" placeholder="IP address">
+      <input type="text" placeholder="Port">
+      <select>
+        <option value="python">Python</option>
+        <option value="nmap">Nmap</option>
+      </select>
+      <button id="submit-button">Scan</button>
     </form>
+  </div>
 </body>
 </html>
