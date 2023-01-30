@@ -1,6 +1,6 @@
 from celery import Celery
 from .services.port_scanning import *
-from .services.save_scan import *
+from .services import save_scan
 
 celery = Celery(__name__)
 celery.config_from_object('main.config.Config')
@@ -13,7 +13,7 @@ def scan_with_python(ip, port_range):
         open_ports = scan_ipv4_range(ip, port_range)
     else:
         return 'Invalid IP'
-    # save_scan(ip, port_range, open_ports)
+    save_scan(ip, port_range, open_ports)
     return open_ports
 
 @celery.task

@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, Blueprint
-from .services.port_scanning import scan_with_python, scan_with_nmap
-# from .services import save_scan
+from .tasks import scan_with_python, scan_with_nmap
+from flask import Blueprint, render_template, request, redirect, url_for
+from services.utils import *
+
 
 app = Blueprint('app', __name__, url_prefix='/')
 
@@ -13,15 +14,10 @@ def scan():
     if request.method == 'POST':
         ip = request.form['ip']
         port_range = request.form['port_range']
-        if request.form['scan_method'] == 'python':
+        scan_type = request.form['scan_type']
+        if scan_type == 'python':
             scan_with_python.delay(ip, port_range)
-        elif request.form['scan_method'] == 'nmap':
+        elif scan_type == 'nmap':
             scan_with_nmap.delay(ip, port_range)
-        else:
-            return 'Invalid scan method'
-        return redirect(url_for('app.results'))
-    return render_template('scan.html')
-
-@app.route('/results')
-def results():
+        return redirect(url_for('app.index'))
     return render_template('scan.html')
