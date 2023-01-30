@@ -4,7 +4,7 @@ from .services.port_scanning import scan_with_python, scan_with_nmap
 
 app = Blueprint('app', __name__, url_prefix='/')
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
@@ -12,23 +12,16 @@ def index():
 def scan():
     if request.method == 'POST':
         ip = request.form['ip']
-        port = request.form['port']
-        option = request.form['option']
-        if option == '1':
-            scan_with_python.delay(ip, port)
-        elif option == '2':
-            scan_with_nmap.delay(ip, port)
+        port_range = request.form['port_range']
+        if request.form['scan_method'] == 'python':
+            scan_with_python.delay(ip, port_range)
+        elif request.form['scan_method'] == 'nmap':
+            scan_with_nmap.delay(ip, port_range)
         else:
-            return 'Invalid option'
-        return redirect(url_for('index'))
+            return 'Invalid scan method'
+        return redirect(url_for('app.results'))
     return render_template('scan.html')
 
-@app.route('/scan/<ip>/<port>/<option>')
-def scan_with_params(ip, port, option):
-    if option == '1':
-        scan_with_python.delay(ip, port)
-    elif option == '2':
-        scan_with_nmap.delay(ip, port)
-    else:
-        return 'Invalid option'
-    return redirect(url_for('index'))
+@app.route('/results')
+def results():
+    return render_template('scan.html')

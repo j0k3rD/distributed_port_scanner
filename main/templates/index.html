@@ -44,10 +44,10 @@
 <body>
   <div id="container">
     <h1>Hack Scan</h1>
-    <form id="scan-form">
-      <input type="text" placeholder="IP address">
-      <input type="text" placeholder="Port">
-      <select>
+    <form id="scan-form" action="/scan" method="POST">
+    <input name="ip" type="text" placeholder="IP address">
+      <input name="port_range" type="text" placeholder="Port">
+      <select name="scan_type">
         <option value="python">Python</option>
         <option value="nmap">Nmap</option>
       </select>

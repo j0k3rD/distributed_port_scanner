@@ -28,19 +28,27 @@
   <table>
     <tr>
       <th>IP Address</th>
-      <td>127.0.0.1</td>
+      <td> 
+        {{ ip }}
+      </td>
     </tr>
     <tr>
       <th>Port</th>
-      <td>80</td>
+      <td>
+        {{ port }}
+      </td>
     </tr>
     <tr>
       <th>Tool Used</th>
-      <td>Nmap</td>
+      <td>
+        {{ tool }}
+      </td>
     </tr>
     <tr>
       <th>Vulnerabilities Found</th>
-      <td>SQL Injection, Cross-Site Scripting</td>
+      <td>
+        {{ vulnerabilities }}
+      </td>
     </tr>
   </table>
 </body>

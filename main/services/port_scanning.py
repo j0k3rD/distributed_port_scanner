@@ -37,21 +37,21 @@ def scan_port(ip, port):
         return False
 
 def scan_ipv4(ip, port_range):
-    port_range = _get_port_range(port_range)
+    port_range = get_port_range(port_range)
     open_ports = []
     for port in port_range:
-        if _scan_port(ip, port):
+        if scan_port(ip, port):
             open_ports.append(port)
     return open_ports
 
 def scan_ipv4_range(ip_range, port_range):
-    ip_range = _get_ipv4_range(ip_range)
-    port_range = _get_port_range(port_range)
+    ip_range = get_ipv4_range(ip_range)
+    port_range = get_port_range(port_range)
     open_ports = {}
     for ip in ip_range:
         open_ports[ip] = []
         for port in port_range:
-            if _scan_port(ip, port):
+            if scan_port(ip, port):
                 open_ports[ip].append(port)
     return open_ports
 
@@ -59,11 +59,11 @@ def scan_with_nmap(ip, port_range):
     os.system('nmap -p {} {}'.format(port_range, ip))
 
 def scan_with_python(ip, port_range):
-    if _is_ipv4(ip):
-        open_ports = _scan_ipv4(ip, port_range)
+    if is_ipv4(ip):
+        open_ports = scan_ipv4(ip, port_range)
         print(OPEN_PORTS.format(ip=ip, open_ports=open_ports))
-    elif _is_ipv4_range(ip):
-        open_ports = _scan_ipv4_range(ip, port_range)
+    elif is_ipv4_range(ip):
+        open_ports = scan_ipv4_range(ip, port_range)
         for ip, ports in open_ports.items():
             print(OPEN_PORTS.format(ip=ip, open_ports=ports))
     else:
