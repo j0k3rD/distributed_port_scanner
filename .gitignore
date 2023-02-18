@@ -1,0 +1,6 @@
+__pycache__
+bin
+dump.rdb
+lib64
+lib
+pyvenv.cfg
