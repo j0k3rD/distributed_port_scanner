@@ -6,7 +6,6 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 import os
 
-
 api = Api()
 db = SQLAlchemy()
 
@@ -40,4 +39,5 @@ def create_app():
     celery.config_from_object(Config)
 
     from . import views
+    
     return app

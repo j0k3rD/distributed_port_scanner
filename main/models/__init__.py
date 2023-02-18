@@ -1,1 +1,2 @@
-from .Scanner import Scanners as ScannersModel
+from .user import User as UserModel
+from .scanner import Scanner as ScannerModel

@@ -17,6 +17,8 @@ def scan():
         scan_type = request.form['scan_type']
         if scan_type == 'python':
             scan_with_python.delay(ip, port_range)
+            #Guarda en la base de datos
+            
         elif scan_type == 'nmap':
             scan_with_nmap.delay(ip, port_range)
         return redirect(url_for('app.index'))

@@ -1,11 +1,12 @@
 from main import create_app
 from dotenv import load_dotenv
-import os
-from multiprocessing import Process
+from main import db
 
-app = create_app()
+app = create_app()  
+app.app_context().push()
 
 load_dotenv()
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)
