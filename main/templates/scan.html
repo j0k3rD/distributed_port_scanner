@@ -33,21 +33,27 @@
       </td>
     </tr>
     <tr>
-      <th>Port</th>
+      <th>Port Range</th>
       <td>
-        {{ port }}
+        {{ port_range }}
       </td>
     </tr>
     <tr>
-      <th>Tool Used</th>
+      <th>Scan Type</th>
       <td>
-        {{ tool }}
+        {{ scan_type }}
       </td>
     </tr>
     <tr>
       <th>Vulnerabilities Found</th>
       <td>
-        {{ vulnerabilities }}
+        {% if scan_result is not none %}
+          <ul>
+              <li>{{ scan_result }}</li>
+          </ul>
+        {% else %}
+          <p>No vulnerabilities found.</p>
+        {% endif %}
       </td>
     </tr>
   </table>
