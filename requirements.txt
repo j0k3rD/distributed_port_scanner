@@ -1,2 +1,11 @@
-pip install python-nmap
-pip install alive-progress
+Flask
+flask_restful
+flask-sqlalchemy
+python-dotenv
+marshmallow
+celery
+redis
+ipython
+requests
+nmap
+alive-progress

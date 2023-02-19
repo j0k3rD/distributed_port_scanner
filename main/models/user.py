@@ -4,9 +4,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 class User(db.Model):
     __tablename__ = 'users'
-    __id = db.Column(db.Integer, primary_key=True)
-    __mac = db.Column(db.String(255), unique=True, nullable=False)
-    __created_at = db.Column(db.DateTime, nullable=False)
+    __id = db.Column('id', db.Integer, primary_key=True)
+    __mac = db.Column('mac', db.String(255), unique=True, nullable=False)
+    __created_at = db.Column('create_at', db.DateTime, nullable=False)
+
+    scanner = db.relationship('Scanner', back_populates='user', cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'User({self.__id}{self.__mac})'

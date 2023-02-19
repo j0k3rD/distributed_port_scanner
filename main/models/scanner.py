@@ -3,14 +3,15 @@ from .. import db
 from sqlalchemy.ext.hybrid import hybrid_property
 
 class Scanner(db.Model):
-    __id = db.Column(db.Integer, primary_key=True)
-    __scanner_type = db.Column(db.String(255))
-    __ip = db.Column(db.String(255))
-    __port = db.Column(db.String(255))
-    __created_at = db.Column(db.DateTime, nullable=False)
-    __user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    __tablename__ = 'scanners'
+    __id = db.Column('id', db.Integer, primary_key=True)
+    __scanner_type = db.Column('scanner_type', db.String(255))
+    __ip = db.Column('ip', db.String(255))
+    __port = db.Column('port', db.String(255))
+    __created_at = db.Column('create_at', db.DateTime, nullable=False)
+    __user_id = db.Column('user_id', db.ForeignKey('users.id'), nullable=False)
     
-    user = db.relationship('User', backpopulates='scanners')
+    user = db.relationship('User', back_populates='scanner')
 
     def __repr__(self):
         return f"Scanners('{self.__id}, '{self.__scanner_type}', '{self.__ip}', '{self.__port})"

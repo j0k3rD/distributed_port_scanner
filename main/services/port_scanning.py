@@ -25,7 +25,10 @@ def is_port_range(port_range):
 
 def get_port_range(port_range):
     port_min, port_max = port_range.split('-')
-    return range(int(port_min), int(port_max)+1)
+    port_range_list = []
+    for port in range(int(port_min), int(port_max)+1):
+        port_range_list.append(port)
+    return port_range_list
 
 def scan_port(ip, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -61,13 +64,13 @@ def scan_with_nmap(ip, port_range):
 def scan_with_python(ip, port_range):
     if is_ipv4(ip):
         open_ports = scan_ipv4(ip, port_range)
-        print(OPEN_PORTS.format(ip=ip, open_ports=open_ports))
+        return OPEN_PORTS.format(ip=ip, open_ports=open_ports)
     elif is_ipv4_range(ip):
         open_ports = scan_ipv4_range(ip, port_range)
         for ip, ports in open_ports.items():
-            print(OPEN_PORTS.format(ip=ip, open_ports=ports))
+            return OPEN_PORTS.format(ip=ip, open_ports=ports)
     else:
-        print(INVALID_IPV4)
+        return INVALID_IPV4
 
 def main():
     ip = input(IPV4_INPUT)

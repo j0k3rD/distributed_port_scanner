@@ -2,7 +2,7 @@ from main import create_app
 from dotenv import load_dotenv
 from main import db
 
-app = create_app()  
+app, celery = create_app()
 app.app_context().push()
 
 load_dotenv()

@@ -1,6 +1,6 @@
 from .tasks import scan_with_python, scan_with_nmap
 from flask import Blueprint, render_template, request, redirect, url_for
-from services.utils import *
+from .services import *
 
 
 app = Blueprint('app', __name__, url_prefix='/')
