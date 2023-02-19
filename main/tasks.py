@@ -24,16 +24,5 @@ def scan_with_python(ip, port_range):
 
 @celery.task
 def scan_with_nmap(ip, port_range):
-    #Primero valida que nmap este instalado
-    validate = Popen(['which', 'nmap'], stdout=PIPE, stderr=PIPE)
-    stdout, stderr = validate.communicate()
-    if stderr:
-        print(NMAP_NOT_INSTALLED)
-        install = input('Do you want to install it? (y/n): ')
-        if install == 'y':
-            os.system('sudo apt install nmap')
-        else:
-            return
-    else:
-        return os.system('nmap -p {} {}'.format(port_range, ip))
-        
+    scan = os.system('nmap -p {} {}'.format(port_range, ip))
+    return scan    

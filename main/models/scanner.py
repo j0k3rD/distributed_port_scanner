@@ -2,6 +2,7 @@
 from .. import db
 from sqlalchemy.ext.hybrid import hybrid_property
 
+
 class Scanner(db.Model):
     __tablename__ = 'scanners'
     __id = db.Column('id', db.Integer, primary_key=True)
@@ -9,12 +10,13 @@ class Scanner(db.Model):
     __ip = db.Column('ip', db.String(255))
     __port = db.Column('port', db.String(255))
     __created_at = db.Column('create_at', db.DateTime, nullable=False)
+    __result = db.Column('result', db.String(255))
     __user_id = db.Column('user_id', db.ForeignKey('users.id'), nullable=False)
     
     user = db.relationship('User', back_populates='scanner')
 
     def __repr__(self):
-        return f"Scanners('{self.__id}, '{self.__scanner_type}', '{self.__ip}', '{self.__port})"
+        return f"Scanners('{self.__id}', '{self.__scanner_type}', '{self.__ip}', '{self.__port}', '{self.__result}')"
 
     @hybrid_property
     def id(self):
@@ -55,6 +57,14 @@ class Scanner(db.Model):
     @created_at.setter
     def created_at(self, created_at):
         self.__created_at = created_at
+
+    @hybrid_property
+    def result(self):
+        return self.__result
+
+    @result.setter
+    def result(self, result):
+        self.__result = result
 
     @hybrid_property
     def user_id(self):

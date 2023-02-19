@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, validate, post_load
-from main.models import User
+from main.models.user import User
 
 
 class UserSchema(Schema):

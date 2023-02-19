@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, validate, post_load, post_dump
-from main.models import Scanner
+from main.models.scanner import Scanner
 
 
 class ScannerSchema(Schema):
@@ -8,6 +8,7 @@ class ScannerSchema(Schema):
     ip = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     port = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     created_at = fields.DateTime(dump_only=True)
+    result = fields.Str(dump_only=True)
     user_id = fields.Int(required=True)
     user = fields.Nested('UserSchema')
 

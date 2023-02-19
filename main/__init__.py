@@ -35,7 +35,7 @@ def create_app():
     api.add_resource(controller.ScannersController, '/scanners')
 
     #Agregamos las Blueprints
-    from .views import app as main_blueprint
+    from .resources.views import app as main_blueprint
     app.register_blueprint(main_blueprint)
 
     celery = Celery(__name__)
