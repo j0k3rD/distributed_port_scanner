@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from main.services import ScannerService, UserService
 from main.map import ScannerSchema, UserSchema
+from main.validate import UserValidate
 
 
 class Scanner(Resource):
@@ -49,6 +50,7 @@ class Scanners(Resource):
         self.__user_service = UserService()
         self.__user_schema = UserSchema()
         self.__service = ScannerService()
+        self.__user_validate = UserValidate()
 
     def get(self):
         '''
@@ -77,11 +79,10 @@ class Scanners(Resource):
         port = page_json['port']
         result = page_json['result']
 
-        @self.__user_validate.get_user(mac)
+        @self.__user_validate.get_user(mac=mac)
         def validater():
-            user = self.__user_schema.dump(self.__user_service.get_by_mac())
+            user = self.__user_schema.dump(self.__user_service.get_by_mac(mac=mac))
             data = {
-                "mac": user_json['mac'],
                 "scanner_type": scanner_type,
                 "ip": ip,
                 "port": port,

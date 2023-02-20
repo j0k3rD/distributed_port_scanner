@@ -1,2 +1,2 @@
-from .scanner import Scanner as ScannerSchema
-from .user import User as UserSchema
+from .scanner import ScannerSchema
+from .user import UserSchema

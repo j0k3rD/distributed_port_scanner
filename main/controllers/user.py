@@ -67,7 +67,7 @@ class Users(Resource):
         '''
         # Json values.
         user_json = request.json
-        mac = user_json['mac']
+        mac = user_json["mac"]
 
         # Validate if user already exists.
         if self.__service.get_by_mac(mac):

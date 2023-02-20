@@ -1,6 +1,7 @@
 #Modelo de la base de datos de los escaneos
 from .. import db
 from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime
 
 
 class Scanner(db.Model):
@@ -9,8 +10,8 @@ class Scanner(db.Model):
     __scanner_type = db.Column('scanner_type', db.String(255))
     __ip = db.Column('ip', db.String(255))
     __port = db.Column('port', db.String(255))
-    __created_at = db.Column('create_at', db.DateTime, nullable=False)
     __result = db.Column('result', db.String(255))
+    __created_at = db.Column('create_at', db.DateTime(), default=datetime.now(), nullable=False)
     __user_id = db.Column('user_id', db.ForeignKey('users.id'), nullable=False)
     
     user = db.relationship('User', back_populates='scanner')
@@ -51,20 +52,20 @@ class Scanner(db.Model):
         self.__port = port
 
     @hybrid_property
-    def created_at(self):
-        return self.__created_at
-
-    @created_at.setter
-    def created_at(self, created_at):
-        self.__created_at = created_at
-
-    @hybrid_property
     def result(self):
         return self.__result
 
     @result.setter
     def result(self, result):
         self.__result = result
+
+    @hybrid_property
+    def created_at(self):
+        return self.__created_at
+
+    @created_at.setter
+    def created_at(self, created_at):
+        self.__created_at = created_at
 
     @hybrid_property
     def user_id(self):

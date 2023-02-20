@@ -1,12 +1,13 @@
 from .. import db
 from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime
 
 
 class User(db.Model):
     __tablename__ = 'users'
-    __id = db.Column('id', db.Integer, primary_key=True)
+    __id = db.Column('id', db.Integer, primary_key=True, nullable=False)
     __mac = db.Column('mac', db.String(255), unique=True, nullable=False)
-    __created_at = db.Column('create_at', db.DateTime, nullable=False)
+    __created_at = db.Column('create_at', db.DateTime(), default=datetime.now(), nullable=False)
 
     scanner = db.relationship('Scanner', back_populates='user', cascade="all, delete-orphan")
 

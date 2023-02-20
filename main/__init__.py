@@ -28,15 +28,18 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.getenv('DATABASE_PATH')+os.getenv('DATABASE_NAME')
     db.init_app(app)
 
+    #Agregamos las Blueprints
+    from .resources.views import app as main_blueprint
+    app.register_blueprint(main_blueprint, url_prefix='/')
+
     #Agregar Resources
     import main.controllers as controller
 
-    api.add_resource(controller.ScannerController, '/scanner/<id>')
+    api.add_resource(controller.UserController, '/user/<int:id>')
+    api.add_resource(controller.UsersController, '/users')
+    api.add_resource(controller.ScannerController, '/scanner/<int:id>')
     api.add_resource(controller.ScannersController, '/scanners')
-
-    #Agregamos las Blueprints
-    from .resources.views import app as main_blueprint
-    app.register_blueprint(main_blueprint)
+    api.init_app(app)
 
     celery = Celery(__name__)
     celery.config_from_object(Config)

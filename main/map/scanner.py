@@ -7,8 +7,8 @@ class ScannerSchema(Schema):
     scanner_type = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     ip = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     port = fields.Str(required=True, validate=validate.Length(min=1, max=255))
-    created_at = fields.DateTime(dump_only=True)
-    result = fields.Str(dump_only=True)
+    created_at = fields.DateTime(required=False)
+    result = fields.Str(validate=validate.Length(min=1, max=255))
     user_id = fields.Int(required=True)
     user = fields.Nested('UserSchema')
 
