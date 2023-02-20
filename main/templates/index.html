@@ -33,12 +33,38 @@
     }
     #submit-button {
       margin-top: 20px;
+      margin-bottom: 30px;
       padding: 10px 20px;
       background-color: green;
       color: white;
       border: none;
       cursor: pointer;
     }
+    #task-cards {
+      display: flex;
+      width: 90%;
+      flex-direction: column;
+      align-items: center;
+    }
+    #completed-task-cards {
+      display: flex;
+      width: 90%;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card {
+      background-color: #ffffff;
+      border: 1px solid #cccccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      margin-bottom: 20px;
+      padding: 20px;
+      width: 90%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
   </style>
 </head>
 <body>
@@ -53,6 +79,46 @@
       </select>
       <button id="submit-button">Scan</button>
     </form>
+
+    <div id="task-cards">
+      <h2>Tasks In Progress</h2>
+      {% for scan in scanners if scan.status != 'SUCCESS' %}
+      <!-- CARD 1 -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Scan {{ scan.id }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Status: {{ scan.status }}</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Scan type: {{ scan.scanner_type }}</p>
+          <p class="card-text">IP: {{ scan.ip }}</p>
+          <p class="card-text">Port Range: {{ scan.port }}</p>
+        </div>
+      </div>      
+      {% endfor %}
+    </div>
+    
+    <div id="completed-task-cards">
+      <h2>Completed Tasks</h2>
+      {% for scan in scanners if scan.status == 'SUCCESS' %}
+      <!-- CARD 1 -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Scan {{ scan.id }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Status: {{ scan.status }}</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Scan type: {{ scan.scanner_type }}</p>
+          <p class="card-text">IP: {{ scan.ip }}</p>
+          <p class="card-text">Port Range: {{ scan.port }}</p>
+          <p class="card-text">Scan result: {{ scan.result }}</p>
+        </div>
+      </div>      
+      {% endfor %}
+    </div>
+    
   </div>
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='tasks_update.js') }}"></script> -->
+
 </body>
 </html>

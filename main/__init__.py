@@ -29,7 +29,7 @@ def create_app():
     db.init_app(app)
 
     #Agregamos las Blueprints
-    from .resources.views import app as main_blueprint
+    from .views import app as main_blueprint
     app.register_blueprint(main_blueprint, url_prefix='/')
 
     #Agregar Resources
@@ -43,6 +43,7 @@ def create_app():
 
     celery = Celery(__name__)
     celery.config_from_object(Config)
+    celery.conf.update(app.config)
 
     from main import tasks
     

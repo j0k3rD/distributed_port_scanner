@@ -27,6 +27,19 @@ class Scanner(Resource):
             - Busqueda en formato json o error 404
         '''
         return self.__schema.dump(self.__service.get_by_id(id)), 201
+
+    def put(self, id):
+        '''
+        Función que actualiza un busqueda por su id
+
+        args:
+            - id: id de la busqueda
+        return:
+            - Busqueda en formato json o error 404
+        '''
+        model = self.__service.get_by_id(id)
+        model = self.__schema.load(request.json, instance=model)
+        return self.__schema.dump(self.__service.update(model)), 201
             
     '''
     TODO: Implementar delete y put en caso de agregar administrador.     
@@ -72,12 +85,11 @@ class Scanners(Resource):
         # Json values
         user_json = request.json
         mac = user_json['mac']
-
-        page_json = request.json
-        scanner_type = page_json['scanner_type']
-        ip = page_json['ip']
-        port = page_json['port']
-        result = page_json['result']
+        scanner_type = user_json['scanner_type']
+        ip = user_json['ip']
+        port = user_json['port']
+        status = user_json['status']
+        result = user_json['result']
 
         @self.__user_validate.get_user(mac=mac)
         def validater():
@@ -86,6 +98,7 @@ class Scanners(Resource):
                 "scanner_type": scanner_type,
                 "ip": ip,
                 "port": port,
+                "status": status,
                 "result": result,
                 "user_id": user["id"]
             }

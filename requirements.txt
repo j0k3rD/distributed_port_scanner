@@ -9,3 +9,4 @@ ipython
 requests
 nmap
 alive-progress
+kombu

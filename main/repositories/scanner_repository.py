@@ -3,7 +3,7 @@ from main.models import ScannerModel
 from .. import db
 
 # TODO: Implementar delete en caso de agregar administrador para eliminar cursos.
-class ScannerRepository(Create, Read):
+class ScannerRepository(Create, Read, Update):
     '''
     Clase que representa el repositorio de la entidad Search
 
@@ -30,4 +30,8 @@ class ScannerRepository(Create, Read):
 
     def find_by_user_id(self, user_id: int) -> db.Model:
         model = db.session.query(self.__type_model).filter(self.__type_model.user_id == user_id).order_by(self.__type_model.id.desc()).first()
+        return model
+
+    def update(self, model: db.Model):
+        db.session.commit()
         return model

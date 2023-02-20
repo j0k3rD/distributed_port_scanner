@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from main.services import UserService
 from main.map import UserSchema
+from main.validate import UserValidate
 
 
 class User(Resource):
@@ -14,6 +15,7 @@ class User(Resource):
     def __init__(self):
         self.__schema = UserSchema()
         self.__service = UserService()
+        self.__validate = UserValidate()
 
 
     def get(self, id):
@@ -25,7 +27,10 @@ class User(Resource):
         return:
             - Usuario en formato json o error 404
         '''
-        return self.__schema.dump(self.__service.get_by_id(id)), 201
+        @self.__validate.validate_user(id)
+        def validater():
+            return self.__schema.dump(self.__service.get_by_id(id)), 201
+        return validater()
             
     '''
     TODO: Implementar delete y put en caso de agregar administrador.     

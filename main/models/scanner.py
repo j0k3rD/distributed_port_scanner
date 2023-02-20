@@ -10,14 +10,15 @@ class Scanner(db.Model):
     __scanner_type = db.Column('scanner_type', db.String(255))
     __ip = db.Column('ip', db.String(255))
     __port = db.Column('port', db.String(255))
-    __result = db.Column('result', db.String(255))
+    __result = db.Column('result', db.String(255), nullable=True)
+    __status = db.Column('status', db.String(255))
     __created_at = db.Column('create_at', db.DateTime(), default=datetime.now(), nullable=False)
     __user_id = db.Column('user_id', db.ForeignKey('users.id'), nullable=False)
     
     user = db.relationship('User', back_populates='scanner')
 
     def __repr__(self):
-        return f"Scanners('{self.__id}', '{self.__scanner_type}', '{self.__ip}', '{self.__port}', '{self.__result}')"
+        return f"Scanners('{self.__id}', '{self.__scanner_type}', '{self.__ip}', '{self.__port}', '{self.__result}', '{self.__status}')"
 
     @hybrid_property
     def id(self):
@@ -58,6 +59,14 @@ class Scanner(db.Model):
     @result.setter
     def result(self, result):
         self.__result = result
+
+    @hybrid_property
+    def status(self):
+        return self.__status
+    
+    @status.setter
+    def status(self, status):
+        self.__status = status
 
     @hybrid_property
     def created_at(self):

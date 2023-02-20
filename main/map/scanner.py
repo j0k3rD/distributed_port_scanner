@@ -8,7 +8,8 @@ class ScannerSchema(Schema):
     ip = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     port = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     created_at = fields.DateTime(required=False)
-    result = fields.Str(validate=validate.Length(min=1, max=255))
+    result = fields.Str(required=True, validate=validate.Length(min=1, max=255))
+    status = fields.Str(required=True)
     user_id = fields.Int(required=True)
     user = fields.Nested('UserSchema')
 
