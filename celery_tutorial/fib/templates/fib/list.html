@@ -1,0 +1,27 @@
+<html>
+    <head></head>
+    <body>
+        <a href="{% url 'fibonacci_start' %}">Start a new calculation</a>
+
+        <hr>
+
+        <ul>
+            {% for execute in executions %}
+            <li>{{ execute.execution_scans }} - Started {{ execute.created_at }}
+                <ul>
+                    <li>Status: {{ execute.status }}</li>
+                    <li>SCAN TYPE: {{ execute.scanner_type }}</li>
+                    <li>IP: {{ execute.ip }}</li>
+                    <li>PORT: {{ execute.port }}</li>
+                    <li>SCAN RESULTS:
+                        {% if execute.result %}
+                            {{ execute.result }}
+                        {% else %}
+                            Scanning...
+                        {% endif %}
+                    </li>
+                </ul>
+            </li>
+            {% endfor %}
+    </body>
+</html>
