@@ -8,7 +8,7 @@ from .tasks import scan_task
 class ScanView(View):
     def get(self, request):
         """Show a form to start a calculation"""
-        return render(request, 'fib/start.html')
+        return render(request, 'scan/start.html')
 
     def post(self, request):
         """Process a form & start a Scan"""
@@ -24,11 +24,19 @@ class ScanView(View):
         )
         scan_task.delay(scan.id)
 
-        return redirect('fibonacci_list')
+        return redirect('scan_list')
 
 
 class ScanListView(View):
     def get(self, request):
         """Show a list of past calculations"""
-        context = {'executions': Scan.objects.all()}
-        return render(request, 'fib/list.html', context=context)
+        pending_scans = Scan.objects.filter(status=Scan.STATUS_PENDING).order_by('-id')
+        error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')
+        success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')
+        context = {
+            'pending_scans': pending_scans,
+            'error_scans': error_scans,
+            'success_scans': success_scans,
+        }
+        return render(request, 'scan/list.html', context=context)
+

@@ -1,20 +1,7 @@
-from celery_tutorial.celery import app
+from distributed_scanner.celery import app
 from .models import Scan
 from .services.port_scanning import *
 
-# @app.task(bind=True)
-# def fibonacci_task(self, calculation_id):
-#     """Perform a calculation & update the status"""
-#     calculation = Calculation.objects.get(id=calculation_id)
-
-#     try:
-#         calculation.output = fib(calculation.input)
-#         calculation.status = Calculation.STATUS_SUCCESS
-#     except Exception as e:
-#         calculation.status = Calculation.STATUS_ERROR
-#         calculation.message = str(e)[:110]
-
-#     calculation.save()
 
 @app.task(bind=True)
 def scan_task(self, scan_id):

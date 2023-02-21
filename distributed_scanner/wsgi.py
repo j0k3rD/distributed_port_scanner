@@ -1,5 +1,5 @@
 """
-WSGI config for celery_tutorial project.
+WSGI config for distributed_scanner project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'celery_tutorial.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'distributed_scanner.settings')
 
 application = get_wsgi_application()

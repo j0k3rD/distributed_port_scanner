@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class FibConfig(AppConfig):
+class ScannerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'fib'
+    name = 'scanner'
