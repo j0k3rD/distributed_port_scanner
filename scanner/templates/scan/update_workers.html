@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar cantidad de workers</title>
+</head>
+<body>
+    <h1>Actualizar cantidad de workers</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="workers">Cantidad de workers:</label>
+        <input type="number" name="workers" min="1" value="{{ current_workers }}">
+        <button type="submit">Actualizar</button>
+    </form>
+</body>
+</html>

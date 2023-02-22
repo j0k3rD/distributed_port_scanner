@@ -1,0 +1,5 @@
+Django==3.2.12
+celery==5.2.7
+redis==6.0.16
+nmap==7.80
+django_celery_beat

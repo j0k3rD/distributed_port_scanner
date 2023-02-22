@@ -96,6 +96,15 @@
                 <input id="submit-button" type="submit" value="Start Scan" style="background-color:#23d18b;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;">
             </form>
         </div>
+
+        <!-- Agrega este formulario en el template 'scan/list.html' -->
+        <form method="post" action="{% url 'update_workers' %}">
+          {% csrf_token %}
+          <label for="workers">Number of Workers:</label>
+          <input type="number" name="workers" id="workers" value="{{ current_workers }}">
+          <button type="submit">Update Workers</button>
+        </form>
+        
         <hr style="border-top: 2px solid #23d18b;margin-top:50px;">
         <div style="background-color: #1f1f1f; color: #fff; padding: 20px; border-radius: 10px;">
           <h2 style="text-align: center; margin-bottom: 20px;">Pending Scans</h2>
