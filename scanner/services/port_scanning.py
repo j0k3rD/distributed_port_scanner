@@ -106,7 +106,7 @@ def scan_with_python(ip, port_range):
                                 s.close()
             result =  ', '.join(['{} {}:{}'.format((OPEN_PORTS), ip, port) for (ip, port) in open_ports])
             if result == '':
-                return 'No open ports in {ip_range} {port_range}'.format(ip_range=ip_range, port_range=port_range)
+                return "No open ports in the specified IP range and port range."
             else:
                 return result
     else:

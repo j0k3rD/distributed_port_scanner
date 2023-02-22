@@ -79,15 +79,16 @@
     </style>
     <body>
       <div id="container" style="text-align:center;background-color:#1a1a1a;color:white;padding-bottom:20px;">
-        <h1 style="color:#23d18b;margin-top:50px;">New Scan</h1>
-        <div style="background-color:#111111;display:inline-block;padding:20px;border-radius:10px;margin-top:50px;">
+        <h1 style="color:#23d18b;margin-top:50px;">Distributed Ports Scanner</h1>
+        <h2 style="color:#23d18b;margin-top:10px;">New Scan</h2>
+        <div style="background-color:#111111;display:inline-block;padding:20px;border-radius:10px;margin-top:10px;">
             <form action="{% url 'scan_start' %}" method="POST">
                 {% csrf_token %}
-                <label for="ip" style="display:block;font-weight:bold;margin-bottom:10px;">IP:</label>
+                <label for="ip" style="display:block;font-weight:bold;margin-bottom:10px;">IP/S:</label>
                 <input type="text" name="ip" id="ip" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
-                <label for="port" style="display:block;font-weight:bold;margin-bottom:10px;">Port:</label>
+                <label for="port" style="display:block;font-weight:bold;margin-bottom:10px;">PORT/S:</label>
                 <input type="text" name="port" id="port" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
-                <label for="scanner_type" style="display:block;font-weight:bold;margin-bottom:10px;">Scanner Type:</label>
+                <label for="scanner_type" style="display:block;font-weight:bold;margin-bottom:10px;">SCANNER TYPE:</label>
                 <select name="scanner_type" id="scan_form" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
                     <option value="python">PYTHON</option>
                     <option value="nmap">NMAP</option>
