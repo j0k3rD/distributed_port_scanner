@@ -76,6 +76,37 @@ class DownloadScanResultsView(View):
         response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+        
+
+class DownloadAllScanResultsView(View):
+    def get(self, request):
+        # Obtener todos los escaneos completados
+        scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS)
+
+        # Generar el archivo de texto correspondiente
+        filename = 'all_scan_results.txt'
+        filepath = f'/tmp/{filename}' # puede cambiar la ubicación temporal si lo desea
+        with open(filepath, 'w') as f:
+            f.write('Resultados de todos los escaneos realizados:\n\n')
+            for scan in scans:
+                f.write(f'ID del escaneo: {scan.id}\n')
+                f.write(f'IP escaneada: {scan.ip}\n')
+                f.write(f'Puerto escaneado: {scan.port}\n')
+                f.write(f'Tipo de escaneo: {scan.scanner_type}\n')
+                f.write(f'Fecha de inicio: {scan.created_at}\n')
+                f.write(f'Fecha de finalización: {scan.modified_at}\n')
+                f.write('Resultados:\n')
+                f.write(scan.result)
+                for n in range(5):
+                    f.write('\n')
+                f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
+                f.write('\n\n')
+
+        # Crear la respuesta HTTP con el archivo de texto adjunto
+        response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+
 
 
 class UpdateWorkersView(View):

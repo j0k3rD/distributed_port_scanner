@@ -24,70 +24,6 @@
           font-size: 36px;
           margin-bottom: 50px;
         }
-        #scan-form {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-        }
-        #submit-button {
-          margin-top: 20px;
-          margin-bottom: 30px;
-          padding: 10px 20px;
-          background-color: green;
-          color: white;
-          border: none;
-          cursor: pointer;
-        }
-        #task-cards {
-          display: flex;
-          width: 90%;
-          flex-direction: column;
-          align-items: center;
-        }
-        #completed-task-cards {
-          display: flex;
-          width: 90%;
-          flex-direction: column;
-          align-items: center;
-        }
-        .card-container {
-          display: flex;
-          flex-wrap: wrap;
-          max-width: 90%;
-          justify-content: center;
-        }
-
-        .card {
-          position: relative;
-          color: #f2f2f2;
-          font-size: 14px;
-          line-height: 1.5;
-          border-radius: 5px;
-          margin: 10px;
-          flex-basis: calc(50% - 20px);
-          text-align: center;
-          background-color: #121313;
-          border: 1px solid #cccccc;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-          margin-bottom: 20px;
-          padding: 20px;
-          width: 90%;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-        }
-        .card a.download {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          font-size: 14px;
-          color: white;
-          background-color: green;
-          padding: 5px 10px;
-          text-decoration: none;
-          border-radius: 5px;
-        }
     </style>
     <body>
       <div id="container" style="text-align:center;background-color:#1a1a1a;color:white;padding-bottom:20px;">
@@ -110,7 +46,7 @@
         </div>
 
         <!-- Agrega este formulario en el template 'scan/list.html' -->
-        <form method="post" action="{% url 'update_workers' %}">
+        <form method="post" action="{% url 'update_workers' %}" style="margin: 30px;">
           {% csrf_token %}
           <label for="workers">Number of Workers:</label>
           <input type="number" name="workers" id="workers" value="{{ current_workers }}">
@@ -138,19 +74,28 @@
               {% endfor %}
           </div>
           <h2 style="text-align: center; margin: 40px 0 20px;">Completed Scans</h2>
+          <a href="{% url 'download_all_scan_results' %}">
+            <button class="btn btn-dark" style="margin-bottom: 30px;">
+                <i class="fa fa-download"></i> Download All Scans Reports
+            </button>
+          </a>
           <div style="display: flex; flex-wrap: wrap; justify-content: center;">
               {% for execute in success_scans %}
               <div style="background-color: #252526; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); border-radius: 5px; margin: 10px; padding: 20px; width: 300px; text-align: center;">
                   <h3 style="margin-bottom: 10px;">{{ execute.execution }}</h3>
                   <p style="margin-bottom: 10px;">Started {{ execute.created_at }}</p>
-                  <ul style="list-style: none; padding: 0; margin: 0;">
+                  <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
                       <li>Status: {{ execute.status }}</li>
                       <li>SCAN TYPE: {{ execute.scanner_type }}</li>
                       <li>IP: {{ execute.ip }}</li>
                       <li>PORT: {{ execute.port }}</li>
                       <li>SCAN RESULTS: {{ execute.result }}</li>
                   </ul> 
-                    <a href="{% url 'download_scan_results' execute.id %}">Download Report</a>
+                  <a href="{% url 'download_scan_results' execute.id %}">
+                    <button class="btn btn-dark">
+                        <i class="fa fa-download"></i> Download Report
+                    </button>
+                  </a>
                   </td>
               </div>
               {% empty %}
