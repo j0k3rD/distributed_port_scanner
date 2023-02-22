@@ -30,9 +30,9 @@ class ScanView(View):
 class ScanListView(View):
     def get(self, request):
         """Show a list of past calculations"""
-        pending_scans = Scan.objects.filter(status=Scan.STATUS_PENDING).order_by('-id')
-        error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')
-        success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')
+        pending_scans = Scan.objects.filter(status=Scan.STATUS_PENDING).order_by('-id')[:3]
+        error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
+        success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:3]
         context = {
             'pending_scans': pending_scans,
             'error_scans': error_scans,
