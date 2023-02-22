@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Descarga de resultados del escaneo</title>
+</head>
+<body>
+    <h1>Resultados del escaneo {{ task.id }}</h1>
+    <p>Se ha generado un archivo de texto con los resultados del escaneo.</p>
+    <p>Haga clic en el botón de descarga para obtener el archivo.</p>
+    <form action="{% url 'scan_download' task.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Descargar</button>
+    </form>
+    <hr>
+    <a href="{% url 'scan_list' %}">Volver a la lista de escaneos</a>
+</body>
+</html>

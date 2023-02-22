@@ -2,9 +2,14 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.conf import settings
 from subprocess import call
-
+from django.http import HttpResponse
+from django.contrib import messages
+import os
+import subprocess
 from .models import Scan
 from .tasks import scan_task
+from celery import current_app
+from django.shortcuts import get_object_or_404
 
 
 class ScanView(View):
@@ -36,25 +41,42 @@ class ScanListView(View):
         error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
         success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
 
-        current_workers = current_app.control.inspect().active().get('celery@worker1.example.com', {}).get('pool', {}).get('max-concurrency')
+        # current_workers = current_app.control.inspect().active().get(settings.CELERY_WORKER_ADDRESS, {}).get('pool', {}).get('max-concurrency')
 
         context = {
             'pending_scans': pending_scans,
             'error_scans': error_scans,
             'success_scans': success_scans,
-            'current_workers': current_workers,
+            # 'current_workers': current_workers,
         }
         return render(request, 'scan/list.html', context=context)
 
 
+class DownloadScanResultsView(View):
+    def get(self, request, scan_id):
+        # Buscar el escaneo completado correspondiente a la tarea con el ID dado
+        scan = get_object_or_404(Scan, id=scan_id, status=Scan.STATUS_SUCCESS)
 
-from django.contrib import messages
+        # Generar el archivo de texto correspondiente
+        filename = f'scan_result_{scan_id}.txt'
+        filepath = f'/tmp/{filename}' # puede cambiar la ubicación temporal si lo desea
+        with open(filepath, 'w') as f:
+            f.write('Resultado del escaneo:\n\n')
+            f.write(f'IP escaneada: {scan.ip}\n')
+            f.write(f'Puerto escaneada: {scan.port}\n')
+            f.write(f'Tipo de escaneo: {scan.scanner_type}\n')
+            f.write(f'Fecha de inicio: {scan.created_at}\n')
+            f.write(f'Fecha de finalización: {scan.modified_at}\n')
+            f.write('Resultados:\n')
+            f.write(scan.result)
+            for n in range(5):
+                f.write('\n')
+            f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
+        # Crear la respuesta HTTP con el archivo de texto adjunto
+        response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
 
-from celery import current_app
-
-
-import os
-import subprocess
 
 class UpdateWorkersView(View):
     def get(self, request):
@@ -81,5 +103,3 @@ class UpdateWorkersView(View):
 
         messages.success(request, f'Se han agregado {workers} workers')
         return redirect('scan_list')
-
-
