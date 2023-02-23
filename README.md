@@ -10,7 +10,8 @@
 
 </h3>
 
-<p>Quiero armar una app cliente-servidor que genere escaneos de puertos abiertos en una ip o un rango de ips determinado, el cual pueda probar la seguridad de los sistemas involucrados, generar un reporte del mismo y brindar algunas ayudas para solucionar el problema dependiendo el tipo de puerto que se encuentra critico. Esto se realizaria con ayuda de: 
+<p>Quiero armar una app cliente-servidor que genere escaneos de puertos abiertos en una ip o un rango de ips determinado, el cual pueda probar la seguridad de los sistemas involucrados, generar un reporte del mismo y brindar algunas ayudas para solucionar el problema dependiendo el tipo de puerto que se encuentra critico. La idea tambien es que se puedan conectar mas colas Celery con mas workers y asi mejorar el procesamiento de las tasks.
+Esto se realizaria con ayuda de: 
 
   - Celery y Redis para generar las tareas asincronicas y encolarlas para su posterior procesamiento. 
   - Django como framework de ayuda para la creacion de la estructura de la aplicacion.
