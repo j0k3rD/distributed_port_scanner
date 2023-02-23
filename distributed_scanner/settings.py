@@ -128,4 +128,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 #Numero de Workers
-CELERY_WORKER_CONCURRENCY = 4
+CELERYD_CONCURRENCY = 4

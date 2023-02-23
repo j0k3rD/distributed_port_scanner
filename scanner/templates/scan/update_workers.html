@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -6,11 +6,11 @@
 </head>
 <body>
     <h1>Actualizar cantidad de workers</h1>
-    <form method="POST">
+    <form method="post">
         {% csrf_token %}
-        <label for="workers">Cantidad de workers:</label>
-        <input type="number" name="workers" min="1" value="{{ current_workers }}">
-        <button type="submit">Actualizar</button>
+        <label for="workers">Cantidad de trabajadores:</label>
+        <input type="number" id="workers" name="workers" min="1">
+        <input type="submit" value="Actualizar">
     </form>
 </body>
-</html> -->
+</html>

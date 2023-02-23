@@ -10,6 +10,7 @@ from .models import Scan
 from .tasks import scan_task
 from celery import current_app
 from django.shortcuts import get_object_or_404
+import shlex
 
 
 class ScanView(View):
@@ -76,7 +77,7 @@ class DownloadScanResultsView(View):
         response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-        
+
 
 class DownloadAllScanResultsView(View):
     def get(self, request):
@@ -108,11 +109,12 @@ class DownloadAllScanResultsView(View):
         return response
 
 
-
 class UpdateWorkersView(View):
+    template_name = 'update_workers.html'
+
     def get(self, request):
         current_workers = current_app.control.inspect().active().get('celery@worker1.example.com', {}).get('pool', {}).get('max-concurrency')
-        return render(request, 'scan/list.html', {'current_workers': current_workers})
+        return render(request, self.template_name, {'current_workers': current_workers})
 
     def post(self, request):
         workers = request.POST.get('workers')
@@ -120,17 +122,16 @@ class UpdateWorkersView(View):
             workers = int(workers)
         except ValueError:
             messages.error(request, 'Debe ingresar un número válido')
-            return redirect('scan_list')
+            return render(request, self.template_name)
 
         current_app.control.broadcast(
             'pool_grow', arguments={'n': workers}, destination=['celery@worker1.example.com']
         )
-        
-        # cambiar la variable de ambiente CELERY_WORKER_CONCURRENCY
+
         os.environ['CELERY_WORKER_CONCURRENCY'] = str(workers)
-        
-        # reiniciar celery
-        subprocess.Popen(["systemctl", "restart", "celery.service"])
+
+        cmd = 'systemctl restart celery.service'
+        subprocess.call(shlex.split(cmd))
 
         messages.success(request, f'Se han agregado {workers} workers')
-        return redirect('scan_list')
+        return render(request, self.template_name, {'current_workers': workers})
