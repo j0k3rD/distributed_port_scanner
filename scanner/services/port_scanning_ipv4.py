@@ -4,8 +4,9 @@ from subprocess import getoutput, Popen, PIPE
 
 # Constants
 IPV4_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-PORT_RANGE_REGEX = r"^(?:(?:[0-9]{1,4})-(?:[0-9]{1,4}))$"
-PORT_MIN = 1
+# REGEX puertos 0-65535
+PORT_RANGE_REGEX = r"^(?:[0-9]{1,5}|6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|0)-(?:[0-9]{1,5}|6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|0)$"
+PORT_MIN = 0
 PORT_MAX = 65535
 IPV4_RANGE_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
 IPV4_INPUT = 'Enter the IPv4 or IPv4 range to scan: '
@@ -21,6 +22,7 @@ INVALID_PORT = 'The port entered is not valid.'
 INVALID_IPV4 = 'The IPv4 entered is not valid.'
 INVALID_PORT_RANGE = 'The port range entered is not valid.'
 INVALID_IPV4_RANGE = 'The IPv4 range entered is not valid.'
+INVALID_IPV6_RANGE = 'The IPv6 range entered is not valid.'
 INVALID_IPV4S = 'Invalid IPV4 or IPV4 range.'
 INVALID_OPTION = 'The option entered is not valid.'
 NMAP_NOT_INSTALLED = 'Nmap is not installed.'
@@ -31,14 +33,11 @@ INVALID_NMAP_IPV4_RANGE = 'The IPv4 range entered is not valid.'
 def is_ipv4(ip):
     return re.match(IPV4_REGEX, ip)
 
-
 def is_ipv4_range(ip_range):
     return re.match(IPV4_RANGE_REGEX, ip_range)
 
-
 def is_port(port):
     return port.isdigit() and PORT_MIN <= int(port) <= PORT_MAX
-
 
 def is_port_range(port_range):
     return re.match(PORT_RANGE_REGEX, port_range)
@@ -50,8 +49,10 @@ def is_nmap_installed():
     return os.path.exists('/usr/bin/nmap')
 
 
-def scan_with_python(ip, port_range):
+def scan_with_python_ipv4(ip, port_range):
     if is_ipv4(ip):
+        if port_range == '':
+            port_range = '0-65535'
         if is_port(port_range):
             port_range = '{port_range}'.format(port_range=port_range)
         elif is_port_range(port_range):
@@ -72,7 +73,7 @@ def scan_with_python(ip, port_range):
         result =  ', '.join(['{} {}:{}'.format((OPEN_PORTS), ip, port) for (ip, port) in open_ports])
 
         if result == '':
-           return 'No open ports in {ip} {port}'.format(ip=ip, port=port)
+           return 'No open ports in {ip}'.format(ip=ip, port=port)
         else:
             return result
 
@@ -88,6 +89,8 @@ def scan_with_python(ip, port_range):
                     for ip4 in range(int(ip_range[0][3]), int(ip_range[1][3]) + 1):
                         ip = '{ip}.{ip2}.{ip3}.{ip4}'.format(ip=ip, ip2=ip2, ip3=ip3, ip4=ip4)
                         if is_ipv4(ip):
+                            if port_range == '':
+                                port_range = '0-65535'
                             if is_port(port_range):
                                 port_range = '{port_range}'.format(port_range=port_range)
                             elif is_port_range(port_range):
@@ -113,7 +116,7 @@ def scan_with_python(ip, port_range):
         return INVALID_IPV4
 
 
-def scan_with_nmap(ip_range, port_range):
+def scan_with_nmap_ipv4(ip_range, port_range):
     if not is_nmap_installed():
         return NMAP_NOT_INSTALLED
     
@@ -123,8 +126,11 @@ def scan_with_nmap(ip_range, port_range):
     else:
         if not is_ipv4(ip_range):
             return INVALID_IPV4
-
+        
+    if port_range == '':
+        port_range = '0-65535'
     if '-' in port_range:
+
         if not is_port_range(port_range):
             return INVALID_PORT_RANGE
     else:
@@ -158,20 +164,3 @@ def scan_with_nmap(ip_range, port_range):
         return 'No open ports found.'
     else:
         return '\n'.join(ips_with_open_ports)
-
-
-
-
-def main():
-    ip = input(IPV4_INPUT)
-    port_range = input(PORT_INPUT)
-    option = input(PYTHON_OR_NMAP)
-    if option == '1':
-        print(scan_with_python(ip, port_range))
-    elif option == '2':
-        print(scan_with_nmap(ip, port_range))
-    else:
-        print(INVALID_OPTION)
-
-if __name__ == '__main__':
-    main()
