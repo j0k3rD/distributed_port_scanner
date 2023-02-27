@@ -5,3 +5,4 @@ lib64
 lib
 pyvenv.cfg
 db.sqlite3
+celerybeat-schedule
