@@ -15,9 +15,6 @@
     - 'DISCORD_PREFIX': whatever prefix you want to use on Discord to communicate with the bot. Example: "!"
     - 'DISCORD_TOKEN': From the 'discord developers' page where you created the bot, copy your bot token. (IMPORTANT: do not share this token)
     - Save the changes made.
-- Now on the 'discord developers' page, go to 'OAuth2' -> 'URL Generator' under 'Scopes' choose 'Bot' and under 'Bot Permissions' choose 'Administrator'.
-Once this is done, copy the invitation link that will be generated at the bottom.
-- Paste it into your browser and then choose the server you want to invite the bot to and click 'Continue'.
 - 3 - Execute: ```
   sh install.sh```
 - 4 - Execute: ```
