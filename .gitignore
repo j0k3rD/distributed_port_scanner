@@ -4,3 +4,4 @@ dump.rdb
 lib64
 lib
 pyvenv.cfg
+db.sqlite3
