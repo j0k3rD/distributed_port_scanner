@@ -3,17 +3,20 @@
 - 1 - Download or clone the repository to your local environment.
 - 2 - **Celery:**
   - Install [Celery](https://pypi.org/project/celery/)
-  - Ubuntu ('sudo pip install celery')
+  - In Ubuntu: ```
+    sudo pip install celery```
 - 3 - **Redis:**
   - Install [Redis](https://redis.io/docs/getting-started/installation/)
-  - Ubuntu ('sudo apt install redis')
+  - In Ubuntu:```
+    sudo apt install redis```
 - 4 - **Django:**
   - Install [Django](https://docs.djangoproject.com/en/4.1/topics/install/)
-  - Ubuntu ('sudo apt install python3-django')
+  - In Ubuntu: ```
+    sudo apt install python3-django```
 - 5 - Inside the project directory run: ```
   pip install -r requirements.txt```
 - 6 - Finally Run: ```
-  python3 manage.py runserver
+  python3 manage.py runserver```
 - 7 - Then Run in another terminal: ```
   celery -A distributed_scanner worker -B -l info```
 - 8 - Open *127.0.0.1:8000/scanner/list/* in your browser.
