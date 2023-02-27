@@ -12,7 +12,11 @@ from celery import current_app
 from django.shortcuts import get_object_or_404
 import shlex
 import psutil
+from subprocess import Popen, PIPE
 
+def get_hostname():
+    hostname = Popen(['hostname'], stdout=PIPE).communicate()[0]
+    return hostname.decode('utf-8').strip()
 
 class ScanView(View):
     def get(self, request):
@@ -45,7 +49,8 @@ class ScanListView(View):
         error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
         success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
 
-        num_workers = current_app.control.inspect().stats()['celery@j0k3rG14']['pool']['max-concurrency']
+        hostname = get_hostname()
+        num_workers = current_app.control.inspect().stats()['celery@'+hostname]['pool']['max-concurrency']
 
         context = {
             'pending_scans': pending_scans,
