@@ -1,5 +1,6 @@
 Django==3.2.12
 celery==5.2.7
-redis==6.0.16
-nmap==7.80
+redis==3.5.3
+nmap
 django_celery_beat
+psutil==5.9.4
