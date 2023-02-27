@@ -1,18 +1,14 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from django.conf import settings
-from subprocess import call
 from django.http import HttpResponse
 from django.contrib import messages
-import os
-import subprocess
 from .models import Scan
 from .tasks import scan_task
 from celery import current_app
 from django.shortcuts import get_object_or_404
-import shlex
-import psutil
 from subprocess import Popen, PIPE
+from django.contrib import messages
+
 
 def get_hostname():
     hostname = Popen(['hostname'], stdout=PIPE).communicate()[0]
@@ -29,17 +25,21 @@ class ScanView(View):
         port = request.POST['port']
         ipv_type = request.POST['ipv_type']
         scanner_type = request.POST['scanner_type']
-        scan = Scan.objects.create(
-            execution=Scan.EXECUTIONS,
-            ipv_type=ipv_type,
-            scanner_type=scanner_type,
-            ip=ip,
-            port=port,
-            status=Scan.STATUS_PENDING,
-        )
-        scan_task.delay(scan.id)
+        if ip != '':
+            scan = Scan.objects.create(
+                execution=Scan.EXECUTIONS,
+                ipv_type=ipv_type,
+                scanner_type=scanner_type,
+                ip=ip,
+                port=port,
+                status=Scan.STATUS_PENDING,
+            )
+            scan_task.delay(scan.id)
 
-        return redirect('scan_list')
+            return redirect('scan_list')
+        else:
+            messages.add_message(request, messages.ERROR, 'You must enter an IP address.')
+            return redirect('scan_list')
 
 
 class ScanListView(View):

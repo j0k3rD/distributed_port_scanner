@@ -56,10 +56,30 @@
         padding: 20px;
         background-color: #252525;
     }
+    /* Estilo para el mensaje flash */
+    .messages {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px #ccc;
+    }
+    /* Estilo adicional para el mensaje flash en modo oscuro */
+    .dark-mode .messages {
+      border-color: #fff;
+      box-shadow: 0px 0px 10px #fff;
+    }
     }
     </style>
     <body>
       <div id="container" style="text-align:center;background-color:#1a1a1a;color:white;padding-bottom:20px;">
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
         <h1 style="color:#23d18b;margin-top:50px;">Distributed Ports Scanner</h1>
         <p style="color:white;">Current number of workers: {{ num_workers }}</p>
         <h2 style="color:#23d18b;margin-top:10px;">New Scan</h2>
