@@ -16,6 +16,7 @@ class Scan(models.Model):
     )
 
     execution = models.CharField(max_length=8, choices=EXECUTIONS)
+    ipv_type = models.CharField(max_length=20, blank=True, null=True)
     scanner_type = models.CharField(max_length=20)
     ip = models.GenericIPAddressField()
     port = models.CharField(max_length=9)

@@ -11,6 +11,7 @@ from .tasks import scan_task
 from celery import current_app
 from django.shortcuts import get_object_or_404
 import shlex
+import psutil
 
 
 class ScanView(View):
@@ -22,9 +23,11 @@ class ScanView(View):
         """Process a form & start a Scan"""
         ip = request.POST['ip']
         port = request.POST['port']
+        ipv_type = request.POST['ipv_type']
         scanner_type = request.POST['scanner_type']
         scan = Scan.objects.create(
             execution=Scan.EXECUTIONS,
+            ipv_type=ipv_type,
             scanner_type=scanner_type,
             ip=ip,
             port=port,
@@ -42,13 +45,13 @@ class ScanListView(View):
         error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
         success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
 
-        # current_workers = current_app.control.inspect().active().get(settings.CELERY_WORKER_ADDRESS, {}).get('pool', {}).get('max-concurrency')
+        num_workers = current_app.control.inspect().stats()['celery@j0k3rG14']['pool']['max-concurrency']
 
         context = {
             'pending_scans': pending_scans,
             'error_scans': error_scans,
             'success_scans': success_scans,
-            # 'current_workers': current_workers,
+            'num_workers': num_workers,
         }
         return render(request, 'scan/list.html', context=context)
 
@@ -107,31 +110,3 @@ class DownloadAllScanResultsView(View):
         response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
-
-class UpdateWorkersView(View):
-    template_name = 'update_workers.html'
-
-    def get(self, request):
-        current_workers = current_app.control.inspect().active().get('celery@worker1.example.com', {}).get('pool', {}).get('max-concurrency')
-        return render(request, self.template_name, {'current_workers': current_workers})
-
-    def post(self, request):
-        workers = request.POST.get('workers')
-        try:
-            workers = int(workers)
-        except ValueError:
-            messages.error(request, 'Debe ingresar un número válido')
-            return render(request, self.template_name)
-
-        current_app.control.broadcast(
-            'pool_grow', arguments={'n': workers}, destination=['celery@worker1.example.com']
-        )
-
-        os.environ['CELERY_WORKER_CONCURRENCY'] = str(workers)
-
-        cmd = 'systemctl restart celery.service'
-        subprocess.call(shlex.split(cmd))
-
-        messages.success(request, f'Se han agregado {workers} workers')
-        return render(request, self.template_name, {'current_workers': workers})
