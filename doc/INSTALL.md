@@ -15,11 +15,13 @@
     sudo apt install python3-django```
 - 5 - Inside the project directory run: ```
     pip install -r requirements.txt```
-- 6 - Then: ```
+- 6 - Then run run: ```
     python3 manage.py migrate``` 
-- 6 - Finally Run: ```
+- 6 - In another terminal run:```
+    redis-server```
+- 7 - In a second terminal run: ```
     python3 manage.py runserver```
-- 7 - Then Run in another terminal: ```
+- 8 - Finally in a third terminal run: ```
     celery -A distributed_scanner worker -B -l info```
 - 8 - Open *127.0.0.1:8000/scanner/list/* in your browser.
 - 9 - Make your owns scanners :D
