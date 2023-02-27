@@ -19,7 +19,7 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        
+
       }
       h1 {
         font-size: 36px;
@@ -29,10 +29,10 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: 25%;
+        width: 27%;
         height: 78%;
         padding: 20px;
-        background-color: #f0f0f0;
+        background-color: #252525;
       }
       
       /* Add dark mode */
@@ -47,12 +47,17 @@
           color: white;
           border: 2px solid white;
         }
-        #instrucciones {
-          background-color: #252525;
-        }
-      }
+      #security {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 27%;
+        height: 78%;
+        padding: 20px;
+        background-color: #252525;
+    }
+    }
     </style>
-    
     <body>
       <div id="container" style="text-align:center;background-color:#1a1a1a;color:white;padding-bottom:20px;">
         <h1 style="color:#23d18b;margin-top:50px;">Distributed Ports Scanner</h1>
@@ -134,37 +139,63 @@
       </div>
       <div id="instrucciones">
         <h3>Instructions:</h3>
-        <li>IP/S:</li>
         <ol>
-        Enter ONE IP or IP RANGE in this format: 
-          <p>Example for ONE IP of IPv4 type: 192.168.1.1
-             Example for IP RANGE of IPv4 type:192.168.1.1-192.168.1.5</p>
-          <p>Example for ONE IP of IPv6 type: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-              Example for IP RANGE of IPv6 type: 2001:0db8:85a3:0000:0000:8a2e:0370:7334-2001:0db8:85a3:0000:0000:8a2e:0370:7335</p>
+            <li>IP/S:</li>
+            <ul>
+                <li>Enter ONE IP or IP RANGE in this format:</li>
+                <ul>
+                    <li>Example for ONE IP of IPv4 type: 192.168.1.1</li>
+                    <li>Example for IP RANGE of IPv4 type: 192.168.1.1-192.168.1.5</li>
+                    <li>Example for ONE IP of IPv6 type: 2001:0db8:85a3:0000:0000:8a2e:0370:7334</li>
+                    <li>Example for IP RANGE of IPv6 type: 2001:0db8:85a3:0000:0000:8a2e:0370:7334-<br>2001:0db8:85a3:0000:0000:8a2e:0370:7335</li>
+                </ul>
+            </ul>
+            <li>PORT/S:</li>
+            <ul>
+                <li>Enter ONE PORT or PORT RANGE in this format:</li>
+                <ul>
+                    <li>Example for ONE PORT: 80</li>
+                    <li>Example for PORT RANGE: 80-100</li>
+                </ul>
+                <li>ATTENTION: if you do not enter ports these will be by default 0-65535</li>
+            </ul>
+            <li>SCAN TYPE:</li>
+            <ul>
+                <li>Select the type of scan you want to perform:</li>
+                <ul>
+                    <li>Python: This scan will be performed with the python script that is in the project folder.</li>
+                    <li>Nmap: This scan will be performed with the nmap tool.</li>
+                </ul>
+            </ul>
+            <li>IP TYPE:</li>
+            <ul>
+                <li>Select the type of IP you want to scan:</li>
+                <ul>
+                    <li>IPv4: This scan will be performed with the IPv4 protocol.</li>
+                    <li>IPv6: This scan will be performed with the IPv6 protocol.</li>
+                </ul>
+            </ul>
+            <li>SCAN RESULTS:</li>
+            <ul>
+                <li>The results of the scan will be displayed in the "Pending Scans" section.</li>
+            </ul>
         </ol>
-        <li>PORT/S:</li>
-        <ol>
-        Enter ONE PORT or PORT RANGE in this format:
-          <p>Example for ONE PORT: 80
-             Example for PORT RANGE: 80-100</p>
-          <p>ATENTION: if you do not enter ports these will be by default 0-65535</p>
-        </ol>
-        <li>SCAN TYPE:</li>
-        <ol>
-        Select the type of scan you want to perform:
-          <p>Python: This scan will be performed with the python script that is in the project folder.</p>
-          <p>Nmap: This scan will be performed with the nmap tool.</p>
-        </ol>
-        <li>IP TYPE:</li>
-        <ol>
-        Select the type of IP you want to scan:
-          <p>IPv4: This scan will be performed with the IPv4 protocol.</p>
-          <p>IPv6: This scan will be performed with the IPv6 protocol.</p>
-        </ol>
-        <li>SCAN RESULTS:</li>
-        <ol>
-        The results of the scan will be displayed in the "Pending Scans" section.
-        </ol>
-          </div>
+      </div>
+      <div id="security">
+        <h3>Online Security</h3>
+        <p>Port scans can be a valuable tool for identifying security vulnerabilities in a network or system, but they can also present security risks for the user. Some tips for minimizing these risks include:</p>
+        <ul>
+          <li>Use a firewall to block unauthorized access to your network or system.</li>
+          <li>Do not use weak or easily guessable passwords.</li>
+          <li>Keep software and operating systems up to date with the latest versions and security patches.</li>
+          <li>Do not share sensitive information online, especially through unsecured or unknown websites.</li>
+          <li>Use a secure internet connection and avoid connecting to unsecured public Wi-Fi networks.</li>
+        </ul>
+        <p>Remember that no system or network is completely secure, but taking proactive security measures can help minimize online security risks.</p>
+        <!-- Agregar imagen -->
+        <p style="text-align: center;">
+          {% load static %} <img src="{% static "scan/hacker.png" %}" alt="hacker" style="height: 300px; width: 300px;" />
+        </p>
+      </div>
     </body>
 </html>
