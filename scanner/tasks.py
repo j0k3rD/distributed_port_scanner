@@ -1,6 +1,7 @@
 from distributed_scanner.celery import app
 from .models import Scan
 from .services.port_scanning_ipv4 import *
+from .services.port_scanning_ipv6 import *
 from celery import current_app
 
 
@@ -27,6 +28,8 @@ def scan_task(self, scan_id):
                 scan_result = scan_with_python_ipv4(ip, port)
             elif scan_type == 'nmap':
                 scan_result = scan_with_nmap_ipv4(ip, port)
+            if execution.port == '':
+                execution.port = '0-65535'
             execution.result = scan_result
             execution.status = Scan.STATUS_SUCCESS
         elif ipv_type == 'ipv6':
@@ -34,6 +37,8 @@ def scan_task(self, scan_id):
                 scan_result = scan_with_python_ipv6(ip, port)
             elif scan_type == 'nmap':
                 scan_result = scan_with_nmap_ipv6(ip, port)
+            if execution.port == '':
+                execution.port = '0-65535'
             execution.result = scan_result
             execution.status = Scan.STATUS_SUCCESS
     except Exception as e:
