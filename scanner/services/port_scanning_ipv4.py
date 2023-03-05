@@ -50,7 +50,7 @@ def scan_ipv4(ip, port_range):
         s.close()
     result =  ', '.join(['{} {}:{}'.format((OPEN_PORTS), ip, port) for (ip, port) in open_ports])
     if result == '':
-        return ""
+        return NOT_OPEN_PORTS
     else:
         return result
 

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+      <title>Distributed Port Scanner</title>
+  </head>
+  <style>
+    /* Estilos base */
+    body {
+      background-color: black;
+      color: white;
+      font-family: monospace;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      color: black;
+      background-color: rgb(177, 167, 167);
+      border: 2px solid black;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 30px;
+      margin-bottom: 50px;
+    }
+    #instrucciones {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 27%;
+      height: 78%;
+      padding: 20px;
+      background-color: #252525;
+    }
+    /* Add dark mode */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: white;
+      }
+      input,
+      select {
+        background-color: #1a1a1a;
+        color: white;
+        border: 2px solid white;
+      }
+      #security {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 27%;
+        height: 78%;
+        padding: 20px;
+        background-color: #252525;
+      }
+      /* Estilo para el mensaje flash */
+      .messages {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px #ccc;
+      }
+      /* Estilo adicional para el mensaje flash en modo oscuro */
+      .dark-mode .messages {
+        border-color: #fff;
+        box-shadow: 0px 0px 10px #fff;
+      }
+    }
+    /* Estilos para escritorio */
+    @media (min-width: 768px) {
+      body {
+        font-size: 15px;
+      }
+      input {
+        font-size: 25px;
+      }
+      label {
+        font-size: 15px;
+      }
+      button {
+        font-size: 18px;
+      }
+      select {
+        font-size: 18px;
+      }
+      h1 {
+        font-size: 35px;
+        margin-bottom: 100px;
+      }
+      #instrucciones {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 27%;
+        height: 78%;
+        padding: 20px;
+        background-color: #252525;
+      }
+      #instrucciones ul {
+        font-size: 15px;
+        max-width: 500px;
+      }
+    }
+  </style>
+  <body>
+      <div id="container" style="text-align:center;background-color:#1a1a1a;color:white;padding-bottom:20px;">
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <h1 style="color:#23d18b;margin-top:50px;">Distributed Ports Scanner</h1>
+        <p style="color:white;">Current number of workers: {{ num_workers }}</p>
+        <h2 style="color:#23d18b;margin-top:10px;">New Scan</h2>
+        <div style="background-color:#111111;display:inline-block;padding:20px;border-radius:10px;margin-top:10px;">
+            <form id="scan-form" name="scan-form">
+                <label for="ip" style="display:block;font-weight:bold;margin-bottom:10px;">IP/S:</label>
+                <input type="text" name="ip" id="ip" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
+                <label for="port" style="display:block;font-weight:bold;margin-bottom:10px;">PORT/S:</label>
+                <input type="text" name="port" id="port" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
+                <label for="scanner_type" style="display:block;font-weight:bold;margin-bottom:10px;">SCANNER TYPE:</label>
+                <select name="scanner_type" id="scanner_type" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
+                    <option value="python">PYTHON</option>
+                    <option value="nmap">NMAP</option>
+                </select>
+                <label for="ipv_type" style="display:block;font-weight:bold;margin-bottom:10px;">IP TYPE:</label>
+                <select name="ipv_type" id="ipv_type" style="width:100%;padding:10px;border-radius:5px;border:none;margin-bottom:20px;background-color:#1a1a1a;color:white;">
+                    <option value="ipv4">IPV4</option>
+                    <option value="ipv6">IPV6</option>
+                </select>
+                <button type="submit" id="chat-message-submit" style="background-color:#23d18b;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;">SCAN</button>
+            </form>
+        </div>
+
+        <h1>Group Name: {{ group_name }}</h1>
+        <textarea id="chat-log" cols="60" rows="20">
+            {% for scan in scans %}
+                {{ scan.message.ip }}
+            {% empty %}
+                No pending scans.
+            {% endfor %}
+        </textarea><br>
+
+        {{group_name|json_script:"group-name"}}
+        
+        <hr style="border-top: 2px solid #23d18b;margin-top:50px;">
+
+        <div style="background-color: #1f1f1f; color: #fff; padding: 20px; border-radius: 10px;">
+          <h2 style="text-align: center; margin-bottom: 20px;">Pending Scans</h2>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+              {% for scan in pending_scans %}
+              <div style="background-color: #252526; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); border-radius: 5px; margin: 10px; padding: 20px; width: 300px; text-align: center;">
+                  <h3 style="margin-bottom: 10px;">{{ scan.id }}</h3>
+                  <p style="margin-bottom: 10px;">Started {{ scan.created_at }}</p>
+                  <ul style="list-style: none; padding: 0; margin: 0;">
+                      <li>Status: {{ scan.status }}</li>
+                      <li>IPV TYPE: {{ scan.ipv_type }}</li>
+                      <li>SCAN TYPE: {{ scan.scanner_type }}</li>
+                      <li>IP: {{ scan.ip }}</li>
+                      <li>PORT: {{ scan.port }}</li>
+                      <li>SCAN RESULTS: {% if scan.result %}{{ scan.result }}{% else %}Scanning...{% endif %}</li>
+                  </ul>
+              </div>
+              {% empty %}
+              <p>No pending scans.</p>
+              {% endfor %}
+          </div>
+          <h2 style="text-align: center; margin: 40px 0 20px;">Completed Scans</h2>
+          <a href="{% url 'download_all_scan_results' %}">
+            <button class="btn btn-dark" style="margin-bottom: 30px;">
+                <i class="fa fa-download"></i> Download All Scans Reports
+            </button>
+          </a>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+              {% for scan in success_scans %}
+              <div style="background-color: #252526; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); border-radius: 5px; margin: 10px; padding: 20px; width: 300px; text-align: center;">
+                  <h3 style="margin-bottom: 10px;">{{ scan.id }}</h3>
+                  <p style="margin-bottom: 10px;">Started {{ scan.created_at }}</p>
+                  <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
+                      <li>Status: {{ scan.status }}</li>
+                      <li>IPV TYPE: {{ scan.ipv_type }}</li>
+                      <li>SCAN TYPE: {{ scan.scanner_type }}</li>
+                      <li>IP: {{ scan.ip }}</li>
+                      <li>PORT: {{ scan.port }}</li>
+                      <li>SCAN RESULTS: {{ scan.result }}</li>
+                  </ul> 
+                    <button class="btn btn-dark">
+                        <i class="fa fa-download"></i> Download Report
+                    </button>
+                  </a>
+                  </td>
+              </div>
+              {% empty %}
+              <p>No completed scans.</p>
+              {% endfor %}
+          </div>
+        </div>        
+      </div>
+
+      <div id="instrucciones">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>IP/S:</li>
+            <ul>
+                <li>Enter ONE IP or IP RANGE in this format:</li>
+                <ul>
+                    <li>Example for ONE IP of IPv4 type: 192.168.1.1</li>
+                    <li>Example for IP RANGE of IPv4 type: 192.168.1.1-192.168.1.5</li>
+                    <li>Example for ONE IP of IPv6 type: 2001:0db8:85a3:0000:0000:8a2e:0370:7334</li>
+                    <li>Example for IP RANGE of IPv6 type: 2001:0db8:85a3:0000:0000:8a2e:0370:7334-<br>2001:0db8:85a3:0000:0000:8a2e:0370:7335</li>
+                </ul>
+            </ul>
+            <li>PORT/S:</li>
+            <ul>
+                <li>Enter ONE PORT or PORT RANGE in this format:</li>
+                <ul>
+                    <li>Example for ONE PORT: 80</li>
+                    <li>Example for PORT RANGE: 80-100</li>
+                </ul>
+                <li>ATTENTION: if you do not enter ports these will be by default 0-65535</li>
+            </ul>
+            <li>SCAN TYPE:</li>
+            <ul>
+                <li>Select the type of scan you want to perform:</li>
+                <ul>
+                    <li>Python: This scan will be performed with the python script that is in the project folder.</li>
+                    <li>Nmap: This scan will be performed with the nmap tool.</li>
+                </ul>
+            </ul>
+            <li>IP TYPE:</li>
+            <ul>
+                <li>Select the type of IP you want to scan:</li>
+                <ul>
+                    <li>IPv4: This scan will be performed with the IPv4 protocol.</li>
+                    <li>IPv6: This scan will be performed with the IPv6 protocol.</li>
+                </ul>
+            </ul>
+            <li>SCAN RESULTS:</li>
+            <ul>
+                <li>The results of the scan will be displayed in the "Pending Scans" section.</li>
+            </ul>
+        </ol>
+      </div>
+
+      <div id="security">
+        <h3>Online Security</h3>
+        <p>Port scans can be a valuable tool for identifying security vulnerabilities in a network or system, but they can also present security risks for the user. Some tips for minimizing these risks include:</p>
+        <ul>
+          <li>Use a firewall to block unauthorized access to your network or system.</li>
+          <li>Do not use weak or easily guessable passwords.</li>
+          <li>Keep software and operating systems up to date with the latest versions and security patches.</li>
+          <li>Do not share sensitive information online, especially through unsecured or unknown websites.</li>
+          <li>Use a secure internet connection and avoid connecting to unsecured public Wi-Fi networks.</li>
+        </ul>
+        <p>Remember that no system or network is completely secure, but taking proactive security measures can help minimize online security risks.</p>
+        <!-- Agregar imagen -->
+        <br>
+        <p style="text-align: center;">
+          {% load static %} <img src="{% static "scan/hacker.png" %}" alt="hacker" style="height: 300px; width: 300px;" />
+        </p>
+      </div>
+      <footer style="background-color: #000; color: #fff; padding: 10px; text-align: center;">
+        <p style="margin: 0;">&copy; 2023 j0k3rD | <a href="https://github.com/j0k3rD" style="color: #fff; text-decoration: underline;" target="_blank">GitHub</a></p>
+      </footer> 
+      
+      <script>
+          // Obtener el nombre del grupo
+          const groupName = JSON.parse(document.getElementById('group-name').textContent)
+          console.log(groupName)
+
+          // Conectar al grupo
+          var ws = new WebSocket(
+              'ws://' 
+              + window.location.host 
+              + '/ws/scan/' 
+              + groupName 
+              + '/')
+
+          // Conectar al grupo
+          ws.onopen = function(e) {
+              console.log('Connection established')
+          }
+          
+          // Recibir datos del escaneo en cards
+          ws.onmessage = function(e) {
+              const data = JSON.parse(e.data)
+              console.log(data)
+              document.getElementById('chat-log').innerHTML += (data.message + '\\n')
+          } 
+
+          // Desconectar del grupo
+          ws.onclose = function(e) {
+              console.log('Connection closed')
+          }
+
+          // Enviar datos del escaneo
+          document.getElementById('scan-form').onsubmit = function(e) {
+              e.preventDefault()
+              const scanner_type = document.getElementById('scanner_type').value
+              const ipv_type = document.getElementById('ipv_type').value
+              const ip = document.getElementById('ip').value
+              const port = document.getElementById('port').value
+              ws.send(JSON.stringify({
+                  'scanner_type': scanner_type,
+                  'ipv_type': ipv_type,
+                  'ip': ip,
+                  'port': port
+              }))
+          }
+
+          // Función para actualizar los escaneos
+          function updateScans() {
+            $.getJSON('', function(data) {
+              if (data && data.pending_scans && data.error_scans && data.success_scans) {
+                // Actualizar las listas de escaneos
+                var pendingList = $('#pending-scans');
+                pendingList.empty();
+                data.pending_scans.forEach(function(scan) {
+                  pendingList.append('<li>Pendiente: ' + scan.id + '</li>');
+                });
+
+                var errorList = $('#error-scans');
+                errorList.empty();
+                data.error_scans.forEach(function(scan) {
+                  errorList.append('<li>Error: ' + scan.id + '</li>');
+                });
+
+                var successList = $('#completed-scans');
+                successList.empty();
+                data.success_scans.forEach(function(scan) {
+                  successList.append('<li>Completado: ' + scan.id + '</li>');
+                });
+              } else {
+                console.error('La respuesta de la solicitud AJAX es inválida: ', data);
+              }
+            });
+          }
+
+          // Actualizar los escaneos cada 5 segundos
+          setInterval(updateScans, 5000);
+
+      </script>
+  </body>
+</html>

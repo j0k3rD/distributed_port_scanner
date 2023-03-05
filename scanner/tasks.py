@@ -1,28 +1,24 @@
-from distributed_scanner.celery import app
+import requests
+from celery import shared_task
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from .models import Scan
 from .services.port_scanning_ipv4 import *
 from .services.port_scanning_ipv6 import *
-from celery import current_app
 
 
-# def get_num_workers():
-#     # Ajustar el autoescalamiento de los workers de Celery
-#     num_workers = current_app.control.inspect().active()
-#     if num_workers and len(num_workers) > 2:
-#         return 16
-#     else:
-#         return 2
+channel_layer = get_channel_layer()
 
 
-@app.task(bind=True)
-def scan_task(self, scan_id):
-    execution = Scan.objects.get(id=scan_id)
-    print(execution)
-    scan_type = execution.scanner_type
-    ipv_type = execution.ipv_type
-    ip = execution.ip
-    port = execution.port
+@shared_task
+def scan_task(scan_id):
     try:
+        execution = Scan.objects.get(id=scan_id)
+        scan_type = execution.scanner_type
+        ipv_type = execution.ipv_type
+        ip = execution.ip
+        port = execution.port
+        
         if ipv_type == 'ipv4': 
             if scan_type == 'python':
                 scan_result = scan_with_python_ipv4(ip, port)
@@ -41,12 +37,18 @@ def scan_task(self, scan_id):
                 execution.port = '0-65535'
             execution.result = scan_result
             execution.status = Scan.STATUS_SUCCESS
+
+        execution.save()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "scanner",
+            {
+                "type": "send_scan",
+                "text": execution.id
+            }
+        )
     except Exception as e:
         execution.status = Scan.STATUS_ERROR
         execution.message = str(e)[:110]
-    
-    execution.save()
-
-    # num_workers = get_num_workers()
-    # actualizar el autoescalamiento de los workers de Celery
-    # current_app.control.broadcast('autoscale', reply=True, min=4, max=num_workers)
+        execution.save()

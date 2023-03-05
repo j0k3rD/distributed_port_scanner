@@ -1,64 +1,33 @@
-from django.shortcuts import render, redirect
-from django.views import View
-from django.http import HttpResponse
-from django.contrib import messages
-from .models import Scan
-from .tasks import scan_task
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Group, Scan
 from celery import current_app
+from .services.functions import get_hostname
+from django.views import View
 from django.shortcuts import get_object_or_404
-from subprocess import Popen, PIPE
-from django.contrib import messages
+from django.http import HttpResponse
 
 
-def get_hostname():
-    hostname = Popen(['hostname'], stdout=PIPE).communicate()[0]
-    return hostname.decode('utf-8').strip()
+def index(request, group_name):
+    group, _ = Group.objects.get_or_create(name=group_name)
 
-class ScanView(View):
-    def get(self, request):
-        """Show a form to start a calculation"""
-        return render(request, 'scan/start.html')
+    hostname = get_hostname()
+    num_workers = current_app.control.inspect().stats()['celery@'+hostname]['pool']['max-concurrency']
 
-    def post(self, request):
-        """Process a form & start a Scan"""
-        ip = request.POST['ip']
-        port = request.POST['port']
-        ipv_type = request.POST['ipv_type']
-        scanner_type = request.POST['scanner_type']
-        if ip != '':
-            scan = Scan.objects.create(
-                execution=Scan.EXECUTIONS,
-                ipv_type=ipv_type,
-                scanner_type=scanner_type,
-                ip=ip,
-                port=port,
-                status=Scan.STATUS_PENDING,
-            )
-            scan_task.delay(scan.id)
+    # Obtén una lista de escaneos actualizada
+    pending_scans = Scan.objects.filter(status=Scan.STATUS_PENDING).order_by('-id')
+    error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
+    success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
 
-            return redirect('scan_list')
-        else:
-            messages.add_message(request, messages.ERROR, 'You must enter an IP address.')
-            return redirect('scan_list')
-
-
-class ScanListView(View):
-    def get(self, request):
-        """Show a list of past calculations"""
-        pending_scans = Scan.objects.filter(status=Scan.STATUS_PENDING).order_by('-id')
-        error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
-        success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
-
-        hostname = get_hostname()
-        num_workers = current_app.control.inspect().stats()['celery@'+hostname]['pool']['max-concurrency']
-
-        context = {
-            'pending_scans': pending_scans,
-            'error_scans': error_scans,
-            'success_scans': success_scans,
-            'num_workers': num_workers,
-        }
-        return render(request, 'scan/list.html', context=context)
+    context = {
+        'pending_scans': pending_scans,
+        'error_scans': error_scans,
+        'success_scans': success_scans,
+        'group_name': group_name,
+        'num_workers': num_workers
+    }
+    
+    return render(request, 'scan.html', context=context)
 
 
 class DownloadScanResultsView(View):

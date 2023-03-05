@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Lista de escaneos</title>
+</head>
+<body>
+	<h1>Lista de escaneos</h1>
+	
+	<h2>Pendientes</h2>
+	<ul id="pending-scans">
+		{% for scan in pending_scans %}
+			<li>{{ scan.id }}</li>
+		{% empty %}
+			<li>No hay escaneos pendientes</li>
+		{% endfor %}
+	</ul>
+
+	<h2>Completados</h2>
+	<ul id="completed-scans">
+		{% for scan in success_scans %}
+			<li>{{ scan.id }}</li>
+		{% empty %}
+			<li>No hay escaneos completados</li>
+		{% endfor %}
+	</ul>
+
+	<h2>Con error</h2>
+	<ul id="error-scans">
+		{% for scan in error_scans %}
+			<li>{{ scan.id }}</li>
+		{% empty %}
+			<li>No hay escaneos con error</li>
+		{% endfor %}
+	</ul>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		// Recarga las cards
+		function updateScans() {
+			$.getJSON('', function(data) {
+				// Actualizar la lista de escaneos pendientes
+				var pendingList = $('#pending-scans');
+				pendingList.empty();
+				data.pending_scans.forEach(function(scan) {
+					pendingList.append('<li>' + scan.id + '</li>');
+				});
+
+				// Actualizar la lista de escaneos con error
+				var errorList = $('#error-scans');
+				errorList.empty();
+				data.error_scans.forEach(function(scan) {
+					errorList.append('<li>' + scan.id + '</li>');
+				});
+
+				// Actualizar la lista de escaneos completados
+				var successList = $('#completed-scans');
+				successList.empty();
+				data.success_scans.forEach(function(scan) {
+					successList.append('<li>' + scan.id + '</li>');
+				});
+			});
+		}
+
+		$(document).ready(function() {
+			// Actualizar los escaneos cada 5 segundos
+			setInterval(updateScans, 5000);
+		});
+	</script>
+</body>
+</html>

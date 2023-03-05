@@ -4,3 +4,6 @@ redis==3.5.3
 nmap
 django_celery_beat
 psutil==5.9.4
+channels==3.0.3
+channels-redis==3.2.0
+requests==2.28.2
