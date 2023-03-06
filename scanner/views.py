@@ -77,11 +77,13 @@ class DownloadAllScanResultsView(View):
                 f.write(f'Fecha de inicio: {scan.created_at}\n')
                 f.write(f'Fecha de finalización: {scan.modified_at}\n')
                 f.write('Resultados:\n')
-                f.write(scan.result)
-                for n in range(5):
-                    f.write('\n')
-                f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
-                f.write('\n\n')
+                f.write(f'{scan.result}\n\n\n')
+            f.write('\n')
+            f.write(ADVICE)
+            for n in range(4):
+                f.write('\n')
+            f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
+            f.write('\n\n')
 
         # Crear la respuesta HTTP con el archivo de texto adjunto
         response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
