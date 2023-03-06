@@ -78,6 +78,7 @@ WSGI_APPLICATION = 'distributed_scanner.wsgi.application'
 
 # Celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

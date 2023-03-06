@@ -6,25 +6,26 @@ from .services.functions import get_hostname
 from django.views import View
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from .services.report_constants import *
 
 
 def index(request, group_name):
     group, _ = Group.objects.get_or_create(name=group_name)
 
     hostname = get_hostname()
-    num_workers = current_app.control.inspect().stats()['celery@'+hostname]['pool']['max-concurrency']
+    num_workers = len(current_app.control.inspect().stats()['celery@'+hostname]['pool']['processes'])
 
-    # Obtén una lista de escaneos actualizada
-    pending_scans = Scan.objects.filter(status=Scan.STATUS_PENDING).order_by('-id')
-    error_scans = Scan.objects.filter(status=Scan.STATUS_ERROR).order_by('-id')[:3]
-    success_scans = Scan.objects.filter(status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
+    # Obtén una lista de escaneos actualizada por grupo
+    pending_scans = Scan.objects.filter(group=group, status=Scan.STATUS_PENDING).order_by('-id')
+    error_scans = Scan.objects.filter(group=group, status=Scan.STATUS_ERROR).order_by('-id')[:3]
+    success_scans = Scan.objects.filter(group=group, status=Scan.STATUS_SUCCESS).order_by('-id')[:4]
 
     context = {
         'pending_scans': pending_scans,
         'error_scans': error_scans,
         'success_scans': success_scans,
         'group_name': group_name,
-        'num_workers': num_workers
+        'num_workers': num_workers,
     }
     
     return render(request, 'scan.html', context=context)
@@ -47,6 +48,8 @@ class DownloadScanResultsView(View):
             f.write(f'Fecha de finalización: {scan.modified_at}\n')
             f.write('Resultados:\n')
             f.write(scan.result)
+            f.write('\n')
+            f.write(ADVICE)
             for n in range(5):
                 f.write('\n')
             f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')

@@ -82,17 +82,8 @@ def scan_with_python_ipv4(ip, port_range):
                 ip = is_ipv4_domain(ip)[1]
         return scan_ipv4(ip, port_range)
     
-def scan_with_nmap_ipv4(ip_range, port_range):
-    if not is_nmap_installed():
-        return NMAP_NOT_INSTALLED
     
-    if '-' in ip_range:
-        if not is_nmap_ipv4_range(ip_range):
-            return INVALID_NMAP_IPV4_RANGE
-    else:
-        if not is_ipv4(ip_range):
-            return INVALID_IPV4
-        
+def scan_nmap(ip_range, port_range):
     if port_range == '':
         port_range = '0-65535'
     if '-' in port_range:
@@ -129,3 +120,50 @@ def scan_with_nmap_ipv4(ip_range, port_range):
         return 'No open ports found.'
     else:
         return '\n'.join(ips_with_open_ports)
+    
+
+def scan_with_nmap_ipv4(ip_range, port_range):
+    if not is_nmap_installed():
+        return NMAP_NOT_INSTALLED
+    
+    if '-' in ip_range:
+        print('llega')
+        if not is_nmap_ipv4_range(ip_range):
+            return INVALID_NMAP_IPV4_RANGE
+        else:
+            scan = scan_nmap(ip_range, port_range)
+            print('llega')
+            return scan
+    else:
+        if not is_ipv4(ip_range):
+            if not is_ipv4_domain(ip_range):
+                print('llega')
+                return NMAP_INVALID_DOMAIN
+            else:
+                ip_range = is_ipv4_domain(ip_range)[1]
+        return scan_nmap(ip_range, port_range)
+        
+        
+
+def main():
+    print('''
+    1. Escanear con python
+    2. Escanear con nmap
+    ''')
+    option = input('Elija una opcion: ')
+    if option == '1':
+        ip = input('Ingrese la ip: ')
+        port_range = input('Ingrese el rango de puertos: ')
+        scan = scan_with_python_ipv4(ip, port_range)
+        print(scan)
+    elif option == '2':
+        ip_range = input('Ingrese el rango de ips: ')
+        port_range = input('Ingrese el rango de puertos: ')
+        scan = scan_with_nmap_ipv4(ip_range, port_range)
+        print(scan)
+    else:
+        print('Opcion invalida')
+        main()
+
+if __name__ == '__main__':
+    main()

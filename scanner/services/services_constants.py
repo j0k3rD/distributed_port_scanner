@@ -26,6 +26,7 @@ NMAP_NOT_INSTALLED = 'Nmap is not installed.'
 NMAP_IPV4_REGEX_RANGE = r"^(?:\d{1,3}\.){3}\d{1,3}\-\d{1,3}$"
 INVALID_NMAP_IPV4_RANGE = 'The IPv4 range entered is not valid.'
 NOT_OPEN_PORTS = 'No open ports in the specified IP range and port range.'
+NMAP_INVALID_DOMAIN = 'The domain entered is not valid.'
 
 
 #Constantes IPV6

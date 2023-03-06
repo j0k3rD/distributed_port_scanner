@@ -45,9 +45,9 @@ Esto se realizaria con ayuda de:
     - Levantar el Celery: usaremos este sistema distribuido para ejecutar todas las tareas usando los workers que se le configuren.
     - Crear la lista de Redis: aca se van a enlistar todas las tareas que realicen los workers.
     - Crear y levantar una base de datos: dentro de esta base de datos se almacenaran principalmente los registros de tablas que se hayan recolectado en los escaneos. Asi cuando se necesiten generar los reportes de la base de datos o de una ip en particular, se recoge la informacion de la misma.
-    - Realizara la conexion con cada uno de los clientes. Una vez se conecta un nuevo cliente, se crea una conexion a traves de Websocket, el cual sera el que se comunique y reciba ordenes del cliente durante toda su sesion. Ademas se podra crear Canales por los cuales grupos dentro de la red pueden trabajar por separado enviando sus peticiones al servidor.
+    - Realizara la conexion con cada uno de los clientes. Una vez se conecta un nuevo cliente, se crea un hilo dentro del proceso principal del sv el cual sera el que se comunique y reciba ordenes del cliente durante toda su sesion. (NO IMPLEMENTADO POR EL MOMENTO!)
   
-  - Cliente: los clientes se conectaran al server a traves de un navegador web.
+  - Cliente: los clientes se conectaran al sv pasando los argumentos necesarios ya mencionados.
   - Celery: este creará los diferentes workers que se usaran para realizar las tareas de los ataques.
   - Redis: enlistar las tareas en memoria.
   - Django: ayuda con la creacion de la estructura de la app.
