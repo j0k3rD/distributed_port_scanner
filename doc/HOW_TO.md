@@ -31,5 +31,7 @@ Con estos pasos, deberías poder conectar un proceso Celery en una PC remota a u
 ## Autoscale
 
 1. En el caso de que quieras agregar la funcionalidad de *`--autoscale`* a Celery necesitas agregar el argumento antes de iniciarlo:
+
   ``` celery -A distributed_scanner worker --loglevel=INFO --autoscale=2,16```
-  IMPORTANTE: el primer numero indica la cantidad minima de workers con los que se ejecutaran las task y el segundo la cantidad maxima de workers que Celery podra levantar para poder realizar las task. Dependiendo la carga, Celery decidira si agrega o quita workers a su funcionamiento.
+
+IMPORTANTE: el primer numero indica la cantidad minima de workers con los que se ejecutaran las task y el segundo la cantidad maxima de workers que Celery podra levantar para poder realizar las task. Dependiendo la carga, Celery decidira si agrega o quita workers a su funcionamiento.
