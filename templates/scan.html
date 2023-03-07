@@ -313,6 +313,12 @@
               const ipv_type = document.getElementById('ipv_type').value
               const ip = document.getElementById('ip').value
               const port = document.getElementById('port').value
+              
+              if (ip=='') {
+              	alert('Please enter a valid IP.')
+              	return
+              }
+              
               ws.send(JSON.stringify({
                   'scanner_type': scanner_type,
                   'ipv_type': ipv_type,
