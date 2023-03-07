@@ -28,8 +28,8 @@
 11. In another terminal run: ```
     redis-server```
 12. In a second terminal run: ```
-    python3 manage.py runserver ```
+    python3 manage.py runserver 0.0.0.0:8000 ```
 13. Finally in a third terminal run: ```
-    celery -A distributed_scanner worker -B -l info```
+    celery -A distributed_scanner worker -l INFO```
 14. Open *0.0.0.0:8000//* in your browser.
 15. Make your owns scanners :D
