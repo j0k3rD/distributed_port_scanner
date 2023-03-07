@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-igt%5*8@fs2*-nf_wj&w6tbu+&_1&nnuw+((h^4e$7p%((v%-+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -77,8 +77,8 @@ ASGI_APPLICATION = 'distributed_scanner.asgi.application'
 WSGI_APPLICATION = 'distributed_scanner.wsgi.application'
 
 # Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://192.168.18.12:6379'
+CELERY_RESULT_BACKEND = 'redis://192.168.18.12:6379'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -94,7 +94,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [('localhost', 6379)],
+            "hosts": [('192.168.18.12', 6379)],
         },
     },
 }
