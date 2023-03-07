@@ -1,4 +1,4 @@
-<h3>SOME IMPROVEMENTS</h3>
+## SOME IMPROVEMENTS
 
 - 1 - **SERVER**
     - AUTOSCALE = Fix the 'autoscale' so that when the number of tasks is greater than 2, they go from 2 workers to 16 workers, and when the number drops, they go back to 2. In this way, we can better optimize the use of station resources.
