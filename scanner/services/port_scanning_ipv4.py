@@ -33,10 +33,8 @@ def scan_ipv4(ip, port_range):
     if port_range == '':
         port_range = '0-65535'
     if is_port(port_range):
-        port_range = '{port_range}'.format(port_range=port_range)
-    elif is_port_range(port_range):
-        port_range = '{port_range}'.format(port_range=port_range)
-    else:
+        port_range = '{}-{}'.format(port_range, port_range)
+    elif not is_port_range(port_range):
         return INVALID_PORT_RANGE
     port_range = port_range.split('-')
     if len(port_range) == 1:
@@ -55,8 +53,8 @@ def scan_ipv4(ip, port_range):
         return result
 
 def ipv4_range_ip_setup(ip):
-    ip_range = ip.split('-')
-    ip_range = [ip_range[0].split('.'), ip_range[1].split('.')]
+    ip_range = ip.split('-') # Se toman los rangos de ip
+    ip_range = [ip_range[0].split('.'), ip_range[1].split('.')] # Divide cada dirección IP en sus cuatro octetos y convierte cada octeto a un número entero.
     if len(ip_range) == 1:
         ip_range = [ip_range[0], ip_range[0]]
     for ip in range(int(ip_range[0][0]), int(ip_range[1][0]) + 1):
@@ -64,7 +62,7 @@ def ipv4_range_ip_setup(ip):
             for ip3 in range(int(ip_range[0][2]), int(ip_range[1][2]) + 1):
                 for ip4 in range(int(ip_range[0][3]), int(ip_range[1][3]) + 1):
                     ip = '{ip}.{ip2}.{ip3}.{ip4}'.format(ip=ip, ip2=ip2, ip3=ip3, ip4=ip4)
-                    yield ip
+                    yield ip # Generador de ip
 
 def scan_with_python_ipv4(ip, port_range):
     #Verificamos si es por ipv4, dominio o rango
@@ -127,24 +125,20 @@ def scan_with_nmap_ipv4(ip_range, port_range):
         return NMAP_NOT_INSTALLED
     
     if '-' in ip_range:
-        print('llega')
         if not is_nmap_ipv4_range(ip_range):
             return INVALID_NMAP_IPV4_RANGE
         else:
             scan = scan_nmap(ip_range, port_range)
-            print('llega')
             return scan
     else:
         if not is_ipv4(ip_range):
             if not is_ipv4_domain(ip_range):
-                print('llega')
                 return NMAP_INVALID_DOMAIN
             else:
                 ip_range = is_ipv4_domain(ip_range)[1]
         return scan_nmap(ip_range, port_range)
         
         
-
 def main():
     print('''
     1. Escanear con python

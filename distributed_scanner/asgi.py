@@ -1,5 +1,5 @@
 """
-ASGI config for jokes_project project.
+ASGI config for ditributed_scanner project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

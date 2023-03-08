@@ -18,8 +18,8 @@ class ScanConsumer(AsyncWebsocketConsumer):
             self.group_name,
             self.channel_name
         )
-
         await self.accept()
+
 
     async def disconnect(self, close_code):
         print('DISCONNECT', close_code)
@@ -33,19 +33,19 @@ class ScanConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         print('RECEIVE', text_data)
         data = json.loads(text_data)
-        print('DATA', data)
-        message = data
-        print('MESSAGE', message)
+        # print('DATA', data)
+        # message = data
+        # print('MESSAGE', message)
         group = await database_sync_to_async(Group.objects.get)(name=self.group_name)
 
         if self.scope['user'].is_authenticated:
-            print('ESTA AUTENTICADO')
+            # print('ESTA AUTENTICADO')
             scanner_type = data['scanner_type']
             ipv_type = data['ipv_type']
             ip = data['ip']
             port = data['port']
             if ip != '':
-                print('antes de crear el scan')
+                # print('antes de crear el scan')
                 scan = Scan(
                     scanner_type=scanner_type,
                     ipv_type=ipv_type,
@@ -53,11 +53,11 @@ class ScanConsumer(AsyncWebsocketConsumer):
                     port=port,
                     group=group
                 )
-                print('antes de guardar el scan', scan.id)
+                # print('antes de guardar el scan', scan.id)
 
                 await database_sync_to_async(scan.save)()
                 
-                print('Se guarda el scan', scan.id)
+                # print('Se guarda el scan', scan.id)
                 
                 tasks.scan_task.delay(scan.id)
                 
@@ -75,15 +75,16 @@ class ScanConsumer(AsyncWebsocketConsumer):
                 'message': 'You are not authenticated'
             }))
 
+
     async def scan_message(self, event):
         #Serialize the data
         print('SCAN MESSAGE', event)
         message = event['message']
-        print('MESSAGE', message)
+        # print('MESSAGE', message)
         scan = await database_sync_to_async(Scan.objects.get)(id=message['scan_id'])
-        print('SCAN', scan)
+        # print('SCAN', scan)
         serialized_scan = await database_sync_to_async(serializers.serialize)('json', [scan,])
-        print('SERIALIZED SCAN', serialized_scan)
+        # print('SERIALIZED SCAN', serialized_scan)
         await self.send(text_data=json.dumps({
             'message': serialized_scan
         }))

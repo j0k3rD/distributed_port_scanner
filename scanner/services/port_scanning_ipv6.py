@@ -5,6 +5,7 @@ from subprocess import getoutput, Popen, PIPE
 from .port_scanning_ipv4 import *
 from .services_constants import *
 
+
 def is_ipv6(ip):
     return re.match(IPV6_REGEX, ip)
 
@@ -43,6 +44,7 @@ def scan_with_python_ipv6(ip, port_range):
         port_range = range(int(port_range[0]), int(port_range[1]) + 1)
         scan = scan_ipv6(ip, port_range)
         return scan
+    # A testear
     elif is_ipv6_range(ip):
         ip_range = ip.split('-')
         if len(ip_range) == 1:

@@ -52,7 +52,7 @@ class DownloadScanResultsView(View):
             f.write(ADVICE)
             for n in range(5):
                 f.write('\n')
-            f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
+            f.write('-- Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
         # Crear la respuesta HTTP con el archivo de texto adjunto
         response = HttpResponse(open(filepath, 'rb'), content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
@@ -82,7 +82,7 @@ class DownloadAllScanResultsView(View):
             f.write(ADVICE)
             for n in range(4):
                 f.write('\n')
-            f.write('--Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
+            f.write('-- Escaneo realizado por: "distributed_ports_scanner" - @j0k3rD --')
             f.write('\n\n')
 
         # Crear la respuesta HTTP con el archivo de texto adjunto
